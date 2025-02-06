@@ -1,0 +1,8 @@
+#typing-container {
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+  max-width: 660px;
+  height: max-content;
+  border: 1px solid;
+}

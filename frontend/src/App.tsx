@@ -1,33 +1,13 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import TypingContainer from "./components/TypingContainer.js"
+
+const text = `
+  “The moon will never lie to anyone. Be like the moon. No one hates the moon or wants to kill it. The moon does not take antidepressants and never gets sent to prison. The moon never shot a guy in the face and ran away. The moon has been around a long time and has never tried to rip anyone off. The moon does not care who you want to touch or what color you are. The moon treats everyone the same. The moon never tries to get in on the guest list or use your name to impress others. Be like the moon. When others insult or belittle in an attempt to elevate themselves, the moon sits passively and watches, never lowering itself to anything that weak. The moon is beautiful and bright. It needs no makeup to look beautiful. The moon never shoves clouds out of its way so it can be seen. The moon needs not fame or money to be powerful. The moon never asks you to go to war to defend it. Be like the moon.” 
+`
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <TypingContainer text={text} />
     </>
   )
 }

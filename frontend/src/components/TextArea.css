@@ -1,0 +1,12 @@
+#typing-area {
+  margin: 0px 0px;
+  padding: 15px;
+  min-width: 660px;
+}
+
+@media (max-width: 659px) {
+  #typing-area {
+    min-width: 300px;
+    max-width: 300px;
+  }
+}
