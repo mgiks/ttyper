@@ -1,15 +1,25 @@
-import { ChangeEvent, useState } from "react"
+import { useContext, useEffect, useRef } from "react"
 import "./TypingArea.css"
+import { IsTypingContainerFocusedContext } from "./context/IsTypingContainerFocusedContext"
 
 function TypingArea() {
-    const [value, setValue] = useState("")
+  const typingAreaRef = useRef<HTMLTextAreaElement>(null)
 
-    function setInput(e: ChangeEvent<HTMLTextAreaElement>) {
-        setValue(e.target.value)
-        console.log("input catched")
-    }
+  const isTypingContainerFocused = useContext(IsTypingContainerFocusedContext)
 
-    return <textarea id="typing-area" onInput={setInput} autoFocus />
+  function toggleFocus() {
+    const typingArea = typingAreaRef.current!
+
+    isTypingContainerFocused ? typingArea.focus() : typingArea.blur()
+  }
+
+  useEffect(toggleFocus, [isTypingContainerFocused])
+
+  function setInput() {
+    console.log("typing caught")
+  }
+
+  return <textarea ref={typingAreaRef} id="typing-area" onInput={setInput} autoFocus />
 }
 
 export default TypingArea

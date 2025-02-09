@@ -17,3 +17,7 @@ body {
   align-items: center;
   margin: 0px;
 }
+
+.unselectable-text {
+  user-select: none;
+}

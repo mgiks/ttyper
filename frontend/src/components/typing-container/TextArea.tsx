@@ -1,9 +1,9 @@
 import "./TextArea.css"
 
-function TextArea(props: { text: string }) {
+function TextArea(props: {text: string}) {
   return (
     <div id="text-area">
-      <span>{props.text}</span>
+      <span className="unselectable-text">{props.text}</span>
     </div>
   )
 }
