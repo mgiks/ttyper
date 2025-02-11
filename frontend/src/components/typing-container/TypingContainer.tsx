@@ -15,12 +15,10 @@ function TypingContainer() {
 
   function focusTypingContainer() {
     setIsTypingContainerFocused(isTypingContainerFocused + 1)
-    console.log("focused")
   }
   
   function unfocusTypingContainer() {
     setIsTypingContainerFocused(0)
-    console.log("unfocused")
   }
 
   const ref = useRef(null)
