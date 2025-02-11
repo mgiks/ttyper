@@ -1,21 +1,21 @@
 import { useEffect, useRef } from "react"
 
-export function useOutsideClick<THTMLElement extends HTMLElement>(
+export function useOutsideKeypress<THTMLElement extends HTMLElement>(
   callback: () => any, 
   refObj?: React.RefObject<THTMLElement>,
 ) {
   let ref = typeof refObj == 'undefined' ? useRef<THTMLElement>(null) : refObj
   const documentRef = useRef<Document>(document)
-  const event = 'pointerdown'
+  const event = 'keydown'
 
   useEffect(() => {
-    const handleClick = (e: PointerEvent) => {
+    const handleKeypress = (e: KeyboardEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         callback() 
       }
     }
-    documentRef.current.addEventListener(event, handleClick, true)
-    return () => documentRef.current.removeEventListener(event, handleClick, true)
+    documentRef.current.addEventListener(event, handleKeypress, true)
+    return () => documentRef.current.removeEventListener(event, handleKeypress, true)
   }, [])
 
   return ref 

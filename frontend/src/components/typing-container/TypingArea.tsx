@@ -4,7 +4,6 @@ import { IsTypingContainerFocusedContext } from "./context/IsTypingContainerFocu
 
 function TypingArea() {
   const typingAreaRef = useRef<HTMLTextAreaElement>(null)
-
   const isTypingContainerFocused = useContext(IsTypingContainerFocusedContext)
 
   function toggleFocus() {
@@ -15,11 +14,7 @@ function TypingArea() {
 
   useEffect(toggleFocus, [isTypingContainerFocused])
 
-  function setInput() {
-    console.log("typing caught")
-  }
-
-  return <textarea ref={typingAreaRef} id="typing-area" onInput={setInput} autoFocus />
+  return <textarea ref={typingAreaRef} id="typing-area" autoFocus />
 }
 
 export default TypingArea

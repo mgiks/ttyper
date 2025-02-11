@@ -2,10 +2,10 @@ import "./TypingContainer.css"
 import TextArea from "./TextArea"
 import TypingArea from "./TypingArea"
 import InactivityCurtain from "./InactivityCurtain"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { IsTypingContainerFocusedContext } from "./context/IsTypingContainerFocusedContext"
-import { useOutsideClick } from "../shared/hooks/useOutsideClick"
-import { moonText } from "../../utils/example-texts"
+import { moonText } from "../shared/utils/example-texts"
+import { useOutsideClickAndKeyPress } from "../shared/hooks/useOutsideClickAndKeypress"
 
 const text = moonText
 
@@ -23,7 +23,13 @@ function TypingContainer() {
     console.log("unfocused")
   }
 
-  const typingContainerRef = useOutsideClick<HTMLDivElement>(unfocusTypingContainer)
+  const ref = useRef(null)
+
+  const typingContainerRef = useOutsideClickAndKeyPress<HTMLDivElement>(
+    unfocusTypingContainer, 
+    focusTypingContainer,
+    ref,
+  )
 
   return (
     <div
