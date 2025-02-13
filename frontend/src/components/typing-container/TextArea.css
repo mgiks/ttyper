@@ -2,6 +2,7 @@
   margin: 0px;
   padding: 15px;
   font-size: 1.4rem;
+  overflow: auto;
 }
 
 @media (max-width: 865px) {
