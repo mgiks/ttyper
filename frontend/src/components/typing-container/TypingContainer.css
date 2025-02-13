@@ -2,9 +2,9 @@
   display: flex; 
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  width: max-content;
-  height: max-content;
+  align-items: flex-start;
   border: 1px solid;
   position: relative;
+  width: 1000px;
+  height: 400px;
 }
