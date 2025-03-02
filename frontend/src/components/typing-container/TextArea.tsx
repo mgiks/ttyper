@@ -1,11 +1,11 @@
-import Cursor from "./Cursor"
-import "./TextArea.css"
+import Cursor from './Cursor'
+import './TextArea.css'
 
 function TextArea(props: { text: string }) {
   return (
-    <div id="text-area">
+    <div id='text-area'>
       <Cursor />
-      <span className="unselectable-text">{props.text}</span>
+      <span className='unselectable-text'>{props.text}</span>
     </div>
   )
 }

@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef } from 'react'
 
 export function useOutsideKeypress<THTMLElement extends HTMLElement>(
-  callback: () => any, 
+  callback: () => any,
   refObj?: React.RefObject<THTMLElement>,
 ) {
   let ref = typeof refObj == 'undefined' ? useRef<THTMLElement>(null) : refObj
@@ -11,12 +11,13 @@ export function useOutsideKeypress<THTMLElement extends HTMLElement>(
   useEffect(() => {
     const handleKeypress = (e: KeyboardEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        callback() 
+        callback()
       }
     }
     documentRef.current.addEventListener(event, handleKeypress, true)
-    return () => documentRef.current.removeEventListener(event, handleKeypress, true)
+    return () =>
+      documentRef.current.removeEventListener(event, handleKeypress, true)
   }, [])
 
-  return ref 
+  return ref
 }

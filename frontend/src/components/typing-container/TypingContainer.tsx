@@ -1,11 +1,11 @@
-import "./TypingContainer.css"
-import TextArea from "./TextArea"
-import TypingArea from "./TypingArea"
-import InactivityCurtain from "./InactivityCurtain"
-import { useRef, useState } from "react"
-import { IsTypingContainerFocusedContext } from "./context/IsTypingContainerFocusedContext"
-import { moonText } from "../shared/utils/example-texts"
-import { useOutsideClickAndKeyPress } from "../shared/hooks/useOutsideClickAndKeypress"
+import './TypingContainer.css'
+import TextArea from './TextArea'
+import TypingArea from './TypingArea'
+import InactivityCurtain from './InactivityCurtain'
+import { useRef, useState } from 'react'
+import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocusedContext'
+import { moonText } from '../shared/utils/example-texts'
+import { useOutsideClickAndKeyPress } from '../shared/hooks/useOutsideClickAndKeypress'
 
 const text = moonText
 
@@ -16,7 +16,7 @@ function TypingContainer() {
   function focusTypingContainer() {
     setIsTypingContainerFocused(isTypingContainerFocused + 1)
   }
-  
+
   function unfocusTypingContainer() {
     setIsTypingContainerFocused(0)
   }
@@ -24,7 +24,7 @@ function TypingContainer() {
   const ref = useRef(null)
 
   const typingContainerRef = useOutsideClickAndKeyPress<HTMLDivElement>(
-    unfocusTypingContainer, 
+    unfocusTypingContainer,
     focusTypingContainer,
     ref,
   )
@@ -32,10 +32,12 @@ function TypingContainer() {
   return (
     <div
       ref={typingContainerRef}
-      id="typing-container" 
-      onClick={focusTypingContainer} 
+      id='typing-container'
+      onClick={focusTypingContainer}
     >
-      <IsTypingContainerFocusedContext.Provider value={isTypingContainerFocused}>
+      <IsTypingContainerFocusedContext.Provider
+        value={isTypingContainerFocused}
+      >
         <InactivityCurtain />
         <TypingArea />
       </IsTypingContainerFocusedContext.Provider>
