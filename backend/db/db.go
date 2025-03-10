@@ -17,9 +17,27 @@ type database struct {
 }
 
 func ConnectToDB(ctx context.Context) *database {
-	dbPass := os.Getenv("POSTGRES_PASSWORD")
-	dbPort := os.Getenv("POSTGRES_PORT")
-	dbName := os.Getenv("POSTGRES_DB")
+	envs := map[string]string{
+		"dbPass": "POSTGRES_PASSWORD",
+		"dbPort": "POSTGRES_PORT",
+		"dbName": "POSTGRES_DB",
+	}
+
+	foundEnvs := make(map[string]string)
+
+	for k, v := range envs {
+		env := os.Getenv(v)
+
+		if len(env) == 0 {
+			log.Fatalf("Env %v not found", v)
+		}
+
+		foundEnvs[k] = env
+	}
+
+	dbPass := foundEnvs["dbPass"]
+	dbPort := foundEnvs["dbPort"]
+	dbName := foundEnvs["dbName"]
 
 	dbUrl := fmt.Sprintf(
 		"postgres://postgres:%s@localhost:%s/%s",
