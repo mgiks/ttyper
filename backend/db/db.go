@@ -51,3 +51,14 @@ func (db *database) Query(query string, args ...any) pgx.Rows {
 
 	return rows
 }
+
+func (db *database) AddTypingText(text string, uploaderName string) pgx.Rows {
+	rows := db.Query(
+		`INSERT INTO typing_text(text, uploader_name) 
+		VALUES ($1, $2) RETURNING text, uploader_name`,
+		text,
+		uploaderName,
+	)
+
+	return rows
+}
