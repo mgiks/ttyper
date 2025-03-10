@@ -29,7 +29,7 @@ func ConnectToDB(ctx context.Context) *database {
 		env := os.Getenv(v)
 
 		if len(env) == 0 {
-			log.Fatalf("Env %v not found", v)
+			log.Fatalf("Env `%v` not found", v)
 		}
 
 		foundEnvs[k] = env
@@ -64,7 +64,7 @@ func ConnectToDB(ctx context.Context) *database {
 func (db *database) Query(query string, args ...any) *pgx.Rows {
 	rows, err := db.pool.Query(db.context, query, args...)
 	if err != nil {
-		log.Fatalf("Query %v failed: %v\n", query, err)
+		log.Fatalf("Query `%v` failed: %v\n", query, err)
 	}
 
 	return &rows
