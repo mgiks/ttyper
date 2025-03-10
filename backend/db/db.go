@@ -43,16 +43,16 @@ func ConnectToDB(ctx context.Context) *database {
 	return &db
 }
 
-func (db *database) Query(query string, args ...any) pgx.Rows {
+func (db *database) Query(query string, args ...any) *pgx.Rows {
 	rows, err := db.pool.Query(db.context, query, args...)
 	if err != nil {
 		log.Fatalf("Query %v failed: %v\n", query, err)
 	}
 
-	return rows
+	return &rows
 }
 
-func (db *database) AddTypingText(text string, uploaderName string) pgx.Rows {
+func (db *database) AddTypingText(text string, uploaderName string) *pgx.Rows {
 	rows := db.Query(
 		`INSERT INTO typing_text(text, uploader_name) 
 		VALUES ($1, $2) RETURNING text, uploader_name`,
