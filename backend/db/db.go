@@ -48,14 +48,14 @@ func ConnectToDB(ctx context.Context) *database {
 
 	dbPool, err := pgxpool.New(ctx, dbUrl)
 	if err != nil {
-		log.Fatalf("Unable to connect to the database: %v\n", err)
+		log.Fatalf("Unable to connect to database: %v\n", err)
 	}
 
 	db := database{url: dbUrl, pool: dbPool, context: ctx}
 
 	err = db.pool.Ping(ctx)
 	if err != nil {
-		log.Fatalf("Unable to ping the database: %v\n", err)
+		log.Fatalf("Unable to ping database: %v\n", err)
 	}
 
 	return &db
