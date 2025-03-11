@@ -1,17 +1,10 @@
 #typing-container {
-  display: flex; 
+  display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  max-width: 1000px;
-  height: max-content;
+  align-items: flex-start;
   border: 1px solid;
   position: relative;
-}
-
-@media (width: 659px) {
-  #typing-container {
-    min-width: 300px;
-    max-width: 300px;
-  }
+  width: 1000px;
+  max-height: 420px;
 }
