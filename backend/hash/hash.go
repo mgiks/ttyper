@@ -13,3 +13,12 @@ func HashAndSalt(password string) string {
 	}
 	return string(hashedPassword)
 }
+
+func CompareToHash(password string, hashedPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	if err != nil {
+		log.Fatalf("Comparison to hash failed: %v", err)
+		return false
+	}
+	return true
+}
