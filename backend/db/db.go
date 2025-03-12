@@ -8,6 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/mgiks/ttyper/hashing"
 )
 
 type database struct {
@@ -76,6 +77,20 @@ func (db *database) AddText(text string, uploaderName string) *pgx.Rows {
 		VALUES ($1, $2) RETURNING text, uploader_name`,
 		text,
 		uploaderName,
+	)
+
+	return rows
+}
+
+func (db *database) AddUser(name string, email string, password string) *pgx.Rows {
+	hashedPassword := hashing.HashAndSalt(password)
+
+	rows := db.Query(
+		`INSERT INTO "user"(username, email, password)
+		VALUES ($1, $2, $3) RETURNING username, email`,
+		name,
+		email,
+		hashedPassword,
 	)
 
 	return rows
