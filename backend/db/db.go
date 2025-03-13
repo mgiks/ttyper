@@ -62,23 +62,23 @@ func ConnectToDB(ctx context.Context) *database {
 	return &db
 }
 
-func (db *database) Query(query string, args ...any) (*pgx.Rows, error) {
+func (db *database) Query(query string, args ...any) (pgx.Rows, error) {
 	rows, err := db.pool.Query(db.context, query, args...)
 	if err != nil {
 		log.Printf("Query `%v` failed: %v\n", query, err)
 		return nil, err
 	}
 
-	return &rows, err
+	return rows, err
 }
 
-func (db *database) QueryRow(query string, args ...any) *pgx.Row {
+func (db *database) QueryRow(query string, args ...any) pgx.Row {
 	row := db.pool.QueryRow(db.context, query, args...)
 
-	return &row
+	return row
 }
 
-func (db *database) AddText(text string, uploaderName string) (*pgx.Rows, error) {
+func (db *database) AddText(text string, uploaderName string) (pgx.Rows, error) {
 	rows, err := db.Query(
 		`INSERT INTO "text"(content, uploader_name) 
 		VALUES ($1, $2) RETURNING text, uploader_name`,
@@ -92,7 +92,7 @@ func (db *database) AddText(text string, uploaderName string) (*pgx.Rows, error)
 	return rows, err
 }
 
-func (db *database) AddUser(name string, email string, password string) (*pgx.Rows, error) {
+func (db *database) AddUser(name string, email string, password string) (pgx.Rows, error) {
 	hashedPassword, err := hashing.HashAndSalt(password)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (db *database) AddUser(name string, email string, password string) (*pgx.Ro
 	return rows, nil
 }
 
-func (db *database) GetRandomText() *pgx.Row {
+func (db *database) GetRandomText() pgx.Row {
 	row := db.QueryRow(`SELECT * FROM "user" ORDER BY RANDOM()`)
 
 	return row
