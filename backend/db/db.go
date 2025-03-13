@@ -62,36 +62,46 @@ func ConnectToDB(ctx context.Context) *database {
 	return &db
 }
 
-func (db *database) Query(query string, args ...any) *pgx.Rows {
+func (db *database) Query(query string, args ...any) (*pgx.Rows, error) {
 	rows, err := db.pool.Query(db.context, query, args...)
 	if err != nil {
 		log.Printf("Query `%v` failed: %v\n", query, err)
+		return nil, err
 	}
 
-	return &rows
+	return &rows, err
 }
 
-func (db *database) AddText(text string, uploaderName string) *pgx.Rows {
-	rows := db.Query(
+func (db *database) AddText(text string, uploaderName string) (*pgx.Rows, error) {
+	rows, err := db.Query(
 		`INSERT INTO "text"(content, uploader_name) 
 		VALUES ($1, $2) RETURNING text, uploader_name`,
 		text,
 		uploaderName,
 	)
+	if err != nil {
+		return nil, err
+	}
 
-	return rows
+	return rows, err
 }
 
-func (db *database) AddUser(name string, email string, password string) *pgx.Rows {
-	hashedPassword := hashing.HashAndSalt(password)
+func (db *database) AddUser(name string, email string, password string) (*pgx.Rows, error) {
+	hashedPassword, err := hashing.HashAndSalt(password)
+	if err != nil {
+		return nil, err
+	}
 
-	rows := db.Query(
+	rows, err := db.Query(
 		`INSERT INTO "user"(username, email, password)
 		VALUES ($1, $2, $3) RETURNING username, email`,
 		name,
 		email,
 		hashedPassword,
 	)
+	if err != nil {
+		return nil, err
+	}
 
-	return rows
+	return rows, nil
 }
