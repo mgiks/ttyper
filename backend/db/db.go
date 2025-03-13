@@ -72,6 +72,12 @@ func (db *database) Query(query string, args ...any) (*pgx.Rows, error) {
 	return &rows, err
 }
 
+func (db *database) QueryRow(query string, args ...any) *pgx.Row {
+	row := db.pool.QueryRow(db.context, query, args...)
+
+	return &row
+}
+
 func (db *database) AddText(text string, uploaderName string) (*pgx.Rows, error) {
 	rows, err := db.Query(
 		`INSERT INTO "text"(content, uploader_name) 
@@ -104,4 +110,10 @@ func (db *database) AddUser(name string, email string, password string) (*pgx.Ro
 	}
 
 	return rows, nil
+}
+
+func (db *database) GetRandomText() *pgx.Row {
+	row := db.QueryRow(`SELECT * FROM "user" ORDER BY RANDOM()`)
+
+	return row
 }
