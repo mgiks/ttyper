@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	server.SetupServer()
+	server.ConfigureServer()
 
 	tsMux := typing.NewTypingServer()
 	err := http.ListenAndServe(":8000", tsMux)

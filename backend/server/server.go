@@ -14,7 +14,7 @@ type serverConfig struct {
 
 var sc serverConfig
 
-func SetupServer() {
+func ConfigureServer() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Failed to load environmental variables: %v\n", err)
