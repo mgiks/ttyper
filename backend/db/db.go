@@ -11,13 +11,13 @@ import (
 	"github.com/mgiks/ttyper/hashing"
 )
 
-type database struct {
-	url     string
-	pool    *pgxpool.Pool
-	context context.Context
+type Database struct {
+	Url     string
+	Pool    *pgxpool.Pool
+	Context context.Context
 }
 
-func ConnectToDB(ctx context.Context) *database {
+func ConnectToDB(ctx context.Context) *Database {
 	envs := map[string]string{
 		"dbPass": "POSTGRES_PASSWORD",
 		"dbPort": "POSTGRES_PORT",
@@ -49,21 +49,21 @@ func ConnectToDB(ctx context.Context) *database {
 
 	dbPool, err := pgxpool.New(ctx, dbUrl)
 	if err != nil {
-		log.Fatalf("Unable to connect to database: %v\n", err)
+		log.Fatalf("Unable to connect to Database: %v\n", err)
 	}
 
-	db := database{url: dbUrl, pool: dbPool, context: ctx}
+	db := Database{Url: dbUrl, Pool: dbPool, Context: ctx}
 
-	err = db.pool.Ping(ctx)
+	err = db.Pool.Ping(ctx)
 	if err != nil {
-		log.Fatalf("Unable to ping database: %v\n", err)
+		log.Fatalf("Unable to ping Database: %v\n", err)
 	}
 
 	return &db
 }
 
-func (db *database) Query(query string, args ...any) (pgx.Rows, error) {
-	rows, err := db.pool.Query(db.context, query, args...)
+func (db *Database) Query(query string, args ...any) (pgx.Rows, error) {
+	rows, err := db.Pool.Query(db.Context, query, args...)
 	if err != nil {
 		log.Printf("Query `%v` failed: %v\n", query, err)
 		return nil, err
@@ -72,13 +72,13 @@ func (db *database) Query(query string, args ...any) (pgx.Rows, error) {
 	return rows, err
 }
 
-func (db *database) QueryRow(query string, args ...any) pgx.Row {
-	row := db.pool.QueryRow(db.context, query, args...)
+func (db *Database) QueryRow(query string, args ...any) pgx.Row {
+	row := db.Pool.QueryRow(db.Context, query, args...)
 
 	return row
 }
 
-func (db *database) AddText(text string, uploaderName string) (pgx.Rows, error) {
+func (db *Database) AddText(text string, uploaderName string) (pgx.Rows, error) {
 	rows, err := db.Query(
 		`INSERT INTO "text"(content, uploader_name) 
 		VALUES ($1, $2) RETURNING text, uploader_name`,
@@ -92,7 +92,7 @@ func (db *database) AddText(text string, uploaderName string) (pgx.Rows, error) 
 	return rows, err
 }
 
-func (db *database) AddUser(name string, email string, password string) (pgx.Rows, error) {
+func (db *Database) AddUser(name string, email string, password string) (pgx.Rows, error) {
 	hashedPassword, err := hashing.HashAndSalt(password)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (db *database) AddUser(name string, email string, password string) (pgx.Row
 	return rows, nil
 }
 
-func (db *database) GetRandomText() pgx.Row {
+func (db *Database) GetRandomText() pgx.Row {
 	row := db.QueryRow(`SELECT content FROM "text" ORDER BY RANDOM()`)
 
 	return row
