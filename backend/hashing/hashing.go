@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func GenerateSalt() ([]byte, error) {
+func GenerateSalt() (string, error) {
 	int := big.NewInt(256)
 	ints := make([]byte, 0)
 
@@ -20,12 +20,12 @@ func GenerateSalt() ([]byte, error) {
 		n, err := rand.Int(rand.Reader, int)
 		if err != nil {
 			log.Printf("Random number generation failed: %v\n", err)
-			return []byte{}, err
+			return "", err
 		}
 		ints = append(ints, byte(n.Int64()))
 	}
 
-	return ints, nil
+	return string(ints), nil
 }
 
 func HashAndSalt(password string, salt string) (string, error) {
