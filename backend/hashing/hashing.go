@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func generateSalt() ([]byte, error) {
+func GenerateSalt() ([]byte, error) {
 	int := big.NewInt(256)
 	ints := make([]byte, 0)
 
@@ -28,12 +28,7 @@ func generateSalt() ([]byte, error) {
 	return ints, nil
 }
 
-func HashAndSalt(password string) (string, error) {
-	salt, err := generateSalt()
-	if err != nil {
-		return "", err
-	}
-
+func HashAndSalt(password string, salt string) (string, error) {
 	time := 1
 	memory := 64 * 1024
 	threads := 4
