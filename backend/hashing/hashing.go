@@ -3,7 +3,6 @@ package hashing
 import (
 	"crypto/rand"
 	b64 "encoding/base64"
-	"fmt"
 	"log"
 	"math/big"
 	"strconv"
@@ -38,17 +37,28 @@ func HashAndSalt(password string) (string, error) {
 	time := 1
 	memory := 64 * 1024
 	threads := 4
-	hash := argon2.IDKey([]byte(password), []byte(salt), uint32(time), uint32(memory), uint8(threads), 32)
+	hash := argon2.IDKey(
+		[]byte(password),
+		[]byte(salt),
+		uint32(time),
+		uint32(memory),
+		uint8(threads),
+		32,
+	)
 
 	b64Hash := b64.StdEncoding.EncodeToString(hash)
 	b64Salt := b64.StdEncoding.EncodeToString([]byte(salt))
 
 	conv := strconv.Itoa
-	params := []string{"argon2", conv(time), conv(memory), conv(threads), b64Salt, b64Hash}
+	params := []string{
+		"argon2",
+		conv(time),
+		conv(memory),
+		conv(threads),
+		b64Salt,
+		b64Hash,
+	}
 	result := strings.Join(params, "$")
-
-	fmt.Println(salt)
-	fmt.Println(b64Salt)
 
 	return result, nil
 }
