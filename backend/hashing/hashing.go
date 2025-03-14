@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"golang.org/x/crypto/argon2"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func GenerateSalt() (string, error) {
@@ -28,7 +27,7 @@ func GenerateSalt() (string, error) {
 	return string(ints), nil
 }
 
-func HashAndSalt(password string, salt string) (string, error) {
+func HashAndSalt(password string, salt string) string {
 	time := 1
 	memory := 64 * 1024
 	threads := 4
@@ -55,14 +54,11 @@ func HashAndSalt(password string, salt string) (string, error) {
 	}
 	result := strings.Join(params, "$")
 
-	return result, nil
+	return result
 }
 
-func CompareToHash(password string, hashedPassword string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-	if err != nil {
-		log.Printf("Comparison to hash failed: %v\n", err)
-		return false
-	}
-	return true
+func CompareToHash(password string, hash string) bool {
+	salt := strings.Split(hash, "$")[4]
+	hp := HashAndSalt(password, salt)
+	return hp == hash
 }
