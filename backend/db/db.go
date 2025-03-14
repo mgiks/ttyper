@@ -93,11 +93,12 @@ func (db *Database) AddText(text string, uploaderName string) (pgx.Rows, error) 
 }
 
 func (db *Database) AddUser(name string, email string, password string) (pgx.Rows, error) {
-	hashedPassword, err := hashing.HashAndSalt(password)
+	salt, err := hashing.GenerateSalt()
 	if err != nil {
 		return nil, err
 	}
 
+	hashedPassword := hashing.HashAndSalt(password, salt)
 	rows, err := db.Query(
 		`INSERT INTO "user"(username, email, password)
 		VALUES ($1, $2, $3) RETURNING username, email`,
