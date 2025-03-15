@@ -2,11 +2,13 @@ package typing
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/coder/websocket"
+	"github.com/mgiks/ttyper/dtos"
 	"github.com/mgiks/ttyper/server"
 )
 
@@ -63,12 +65,17 @@ func (ts *typingServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func getText() []byte {
 	db := server.GetServerConfig().Db
 
-	var text []byte
+	td := &dtos.Text{}
 	row := db.GetRandomText()
-	err := row.Scan(&text)
+	err := row.Scan(&td.Id, &td.Text, &td.Submitter, &td.Source)
 	if err != nil {
 		log.Printf("Failed to get text: %v\n", err)
 	}
 
-	return text
+	jsonText, err := json.Marshal(td)
+	if err != nil {
+		log.Printf("Failed to marshal text to json: %v\n", err)
+	}
+
+	return jsonText
 }
