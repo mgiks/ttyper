@@ -1,7 +1,10 @@
 package dtos
 
 type Text struct {
-	Text string `json:"text"`
+	Id        int    `json:"id"`
+	Text      string `json:"text"`
+	Submitter string `json:"submitter"`
+	Source    string `json:"source"`
 }
 
 type KeyCheck struct {
