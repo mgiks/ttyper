@@ -29,17 +29,11 @@ func (ts *typingServer) subscribeHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	wsc, err := websocket.Accept(w, r, acceptOptions)
-
 	if err != nil {
 		panic(err)
 	}
 
 	ctx := context.Background()
-	err = wsc.Write(ctx, websocket.MessageText, []byte("Connection established!"))
-	if err != nil {
-		log.Printf("Failed to establish connection: %v\n", err)
-	}
-
 	text := getText()
 	err = wsc.Write(ctx, websocket.MessageText, text)
 	if err != nil {
@@ -65,17 +59,20 @@ func (ts *typingServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func getText() []byte {
 	db := server.GetServerConfig().Db
 
-	td := &dtos.Text{}
+	t := &dtos.Text{}
+	t.SetMessageType()
+
 	row := db.GetRandomText()
+	td := t.TextData
 	err := row.Scan(&td.Id, &td.Text, &td.Submitter, &td.Source)
 	if err != nil {
 		log.Printf("Failed to get text: %v\n", err)
 	}
 
-	jsonText, err := json.Marshal(td)
+	jsonT, err := json.Marshal(t)
 	if err != nil {
 		log.Printf("Failed to marshal text to json: %v\n", err)
 	}
 
-	return jsonText
+	return jsonT
 }
