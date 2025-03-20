@@ -17,7 +17,7 @@ type TextData struct {
 
 type Text struct {
 	Message
-	TextData
+	Data TextData `json:"data"`
 }
 
 func (m *Text) SetMessageType() {
@@ -31,7 +31,7 @@ type KeyCheckData struct {
 
 type KeyCheck struct {
 	Message
-	KeyCheckData
+	Data KeyCheckData `json:"data"`
 }
 
 func (m *KeyCheck) SetMessageType() {

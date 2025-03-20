@@ -63,7 +63,7 @@ func getText() []byte {
 	t.SetMessageType()
 
 	row := db.GetRandomText()
-	td := &t.TextData
+	td := &t.Data
 	err := row.Scan(&td.Id, &td.Text, &td.Submitter, &td.Source)
 	if err != nil {
 		log.Printf("Failed to get text: %v\n", err)
