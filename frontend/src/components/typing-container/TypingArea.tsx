@@ -2,7 +2,25 @@ import { useContext, useEffect, useRef, useState } from 'react'
 import './TypingArea.css'
 import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocusedContext'
 import { TextMessage } from '../shared/dtos/message'
-import { TextContext } from './context/TextContext'
+import { LeadingAndTralingTextContext } from './context/LeadingAndTralingTextContext'
+
+function trackText(text: string) {
+  const trackedText = text.split('')
+  let currentCharIndex = 0
+
+  return function (key: string) {
+    const currentChar = trackedText[currentCharIndex]
+    const nextCharIndex = currentCharIndex + 1
+    currentCharIndex = nextCharIndex
+
+    if (key != currentChar) {
+      return false
+    }
+    return true
+  }
+}
+
+let checkKey: (_: string) => boolean
 
 function TypingArea() {
   const typingAreaRef = useRef<HTMLTextAreaElement>(null)
@@ -11,7 +29,10 @@ function TypingArea() {
     useRef(new WebSocket('ws://localhost:8000')).current
   const [websocketConnectionEstablished, setWebsocketConnectionEstablished] =
     useState(false)
-  const { setText } = useContext(TextContext)
+  const { leadingText, setLeadingText, trailingText, setTrailingText } =
+    useContext(
+      LeadingAndTralingTextContext,
+    )
 
   useEffect(() => {
     websocketConnection.addEventListener('open', (_) => {
@@ -23,8 +44,11 @@ function TypingArea() {
       const message: TextMessage = JSON.parse(e.data)
       const messageType = message.messageType
       const messageData = message.data
+
       if (messageType == 'text') {
-        setText(messageData.text)
+        const text = messageData.text
+        setTrailingText(text)
+        checkKey = trackText(text)
       }
     })
   }, [])
@@ -46,6 +70,38 @@ function TypingArea() {
     console.log('Key press sent:', key)
   }
 
+  function setTrailingAndLeadingText(
+    event: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) {
+    const key = event.key
+
+    if (key != 'Backspace' && key.length > 1) {
+      return
+    }
+
+    const leadingTextArray = leadingText.split('')
+    const trailingTextArray = trailingText.split('')
+
+    if (key == 'Backspace') {
+      const leadingTextLastChar = leadingTextArray.pop()
+      if (leadingTextLastChar) {
+        trailingTextArray.reverse()
+        trailingTextArray.push(leadingTextLastChar)
+        trailingTextArray.reverse()
+      }
+    } else {
+      trailingTextArray.reverse()
+      const trailingTextFirstChar = trailingTextArray.pop()
+      if (trailingTextFirstChar) {
+        leadingTextArray.push(trailingTextFirstChar)
+      }
+      trailingTextArray.reverse()
+    }
+
+    setLeadingText(leadingTextArray.join(''))
+    setTrailingText(trailingTextArray.join(''))
+  }
+
   function toggleFocus() {
     const typingArea = typingAreaRef.current!
 
@@ -57,7 +113,7 @@ function TypingArea() {
   return (
     <textarea
       ref={typingAreaRef}
-      onKeyDown={sendKeypress}
+      onKeyDown={setTrailingAndLeadingText}
       id='typing-area'
       autoFocus
     />

@@ -5,12 +5,13 @@ import InactivityCurtain from './InactivityCurtain'
 import { useRef, useState } from 'react'
 import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocusedContext'
 import { useOutsideClickAndKeyPress } from '../shared/hooks/useOutsideClickAndKeypress'
-import { TextContext } from './context/TextContext'
+import { LeadingAndTralingTextContext } from './context/LeadingAndTralingTextContext'
 
 function TypingContainer() {
   // Not a boolean to allow refocusing when already focused
   const [isTypingContainerFocused, setIsTypingContainerFocused] = useState(1)
-  const [text, setText] = useState('')
+  const [leadingText, setLeadingText] = useState('')
+  const [trailingText, setTrailingText] = useState('')
 
   function focusTypingContainer() {
     setIsTypingContainerFocused(isTypingContainerFocused + 1)
@@ -34,15 +35,22 @@ function TypingContainer() {
       id='typing-container'
       onClick={focusTypingContainer}
     >
-      <TextContext.Provider value={{ text, setText }}>
-        <IsTypingContainerFocusedContext.Provider
-          value={isTypingContainerFocused}
+      <IsTypingContainerFocusedContext.Provider
+        value={isTypingContainerFocused}
+      >
+        <InactivityCurtain />
+        <LeadingAndTralingTextContext.Provider
+          value={{
+            leadingText,
+            setLeadingText,
+            trailingText,
+            setTrailingText,
+          }}
         >
-          <InactivityCurtain />
           <TypingArea />
           <TextArea />
-        </IsTypingContainerFocusedContext.Provider>
-      </TextContext.Provider>
+        </LeadingAndTralingTextContext.Provider>
+      </IsTypingContainerFocusedContext.Provider>
     </div>
   )
 }
