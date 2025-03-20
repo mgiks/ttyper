@@ -1,11 +1,14 @@
+import { useContext } from 'react'
 import Cursor from './Cursor'
 import './TextArea.css'
+import { TextContext } from './context/TextContext'
 
-function TextArea(props: { text: string }) {
+function TextArea() {
+  const { text } = useContext(TextContext)
   return (
     <div id='text-area'>
       <Cursor />
-      <span className='unselectable-text'>{props.text}</span>
+      <span className='unselectable-text'>{text}</span>
     </div>
   )
 }

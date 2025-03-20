@@ -4,14 +4,13 @@ import TypingArea from './TypingArea'
 import InactivityCurtain from './InactivityCurtain'
 import { useRef, useState } from 'react'
 import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocusedContext'
-import { moonText } from '../shared/utils/example-texts'
 import { useOutsideClickAndKeyPress } from '../shared/hooks/useOutsideClickAndKeypress'
-
-const text = moonText
+import { TextContext } from './context/TextContext'
 
 function TypingContainer() {
   // Not a boolean to allow refocusing when already focused
   const [isTypingContainerFocused, setIsTypingContainerFocused] = useState(1)
+  const [text, setText] = useState('')
 
   function focusTypingContainer() {
     setIsTypingContainerFocused(isTypingContainerFocused + 1)
@@ -35,13 +34,15 @@ function TypingContainer() {
       id='typing-container'
       onClick={focusTypingContainer}
     >
-      <IsTypingContainerFocusedContext.Provider
-        value={isTypingContainerFocused}
-      >
-        <InactivityCurtain />
-        <TypingArea />
-      </IsTypingContainerFocusedContext.Provider>
-      <TextArea text={text} />
+      <TextContext.Provider value={{ text, setText }}>
+        <IsTypingContainerFocusedContext.Provider
+          value={isTypingContainerFocused}
+        >
+          <InactivityCurtain />
+          <TypingArea />
+          <TextArea />
+        </IsTypingContainerFocusedContext.Provider>
+      </TextContext.Provider>
     </div>
   )
 }
