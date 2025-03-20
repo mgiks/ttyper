@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import './TypingArea.css'
 import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocusedContext'
 import { TextMessage } from '../shared/dtos/message'
@@ -29,10 +29,10 @@ function TypingArea() {
     useRef(new WebSocket('ws://localhost:8000')).current
   const [websocketConnectionEstablished, setWebsocketConnectionEstablished] =
     useState(false)
-  const { leadingText, setLeadingText, trailingText, setTrailingText } =
-    useContext(
-      LeadingAndTralingTextContext,
-    )
+  const { setLeadingText, setTrailingText } = useContext(
+    LeadingAndTralingTextContext,
+  )
+  const [textArray, setTextArray] = useState([''])
 
   useEffect(() => {
     websocketConnection.addEventListener('open', (_) => {
@@ -40,18 +40,25 @@ function TypingArea() {
       setWebsocketConnectionEstablished(true)
     })
 
-    websocketConnection.addEventListener('message', (e) => {
+    const handleMessage = (e: MessageEvent) => {
       const message: TextMessage = JSON.parse(e.data)
       const messageType = message.messageType
       const messageData = message.data
 
-      if (messageType == 'text') {
+      if (messageType === 'text') {
         const text = messageData.text
+        setTextArray(text.split(''))
         setTrailingText(text)
         checkKey = trackText(text)
       }
-    })
-  }, [])
+    }
+
+    websocketConnection.addEventListener('message', handleMessage)
+
+    return () => {
+      websocketConnection.removeEventListener('message', handleMessage)
+    }
+  }, [websocketConnection])
 
   function sendKeypress(event: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (!websocketConnectionEstablished) {
@@ -70,37 +77,32 @@ function TypingArea() {
     console.log('Key press sent:', key)
   }
 
-  function setTrailingAndLeadingText(
+  const [currentCursorIndex, setCurrentCursorIndex] = useState(0)
+
+  function setCursorPosition(
     event: React.KeyboardEvent<HTMLTextAreaElement>,
   ) {
     const key = event.key
 
-    if (key != 'Backspace' && key.length > 1) {
+    if (key !== 'Backspace' && key.length > 1) {
       return
     }
 
-    const leadingTextArray = leadingText.split('')
-    const trailingTextArray = trailingText.split('')
-
-    if (key == 'Backspace') {
-      const leadingTextLastChar = leadingTextArray.pop()
-      if (leadingTextLastChar) {
-        trailingTextArray.reverse()
-        trailingTextArray.push(leadingTextLastChar)
-        trailingTextArray.reverse()
-      }
+    if (key === 'Backspace' && currentCursorIndex > 0) {
+      setCurrentCursorIndex((prevCursorIndex) => prevCursorIndex - 1)
     } else {
-      trailingTextArray.reverse()
-      const trailingTextFirstChar = trailingTextArray.pop()
-      if (trailingTextFirstChar) {
-        leadingTextArray.push(trailingTextFirstChar)
-      }
-      trailingTextArray.reverse()
+      setCurrentCursorIndex((prevCursorIndex) => prevCursorIndex + 1)
     }
 
-    setLeadingText(leadingTextArray.join(''))
-    setTrailingText(trailingTextArray.join(''))
+    console.log(currentCursorIndex)
   }
+
+  const updateText = useCallback(() => {
+    setLeadingText(textArray.slice(0, currentCursorIndex).join(''))
+    setTrailingText(textArray.slice(currentCursorIndex).join(''))
+  }, [currentCursorIndex])
+
+  useEffect(updateText, [currentCursorIndex, textArray])
 
   function toggleFocus() {
     const typingArea = typingAreaRef.current!
@@ -113,7 +115,7 @@ function TypingArea() {
   return (
     <textarea
       ref={typingAreaRef}
-      onKeyDown={setTrailingAndLeadingText}
+      onKeyDown={setCursorPosition}
       id='typing-area'
       autoFocus
     />
