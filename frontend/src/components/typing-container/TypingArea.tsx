@@ -11,8 +11,6 @@ function TypingArea() {
   const typingAreaRef = useRef<HTMLTextAreaElement>(null)
   const isTypingContainerFocused = useContext(IsTypingContainerFocusedContext)
   const websocketConnection = useRef<WebSocket | null>(null)
-  const [websocketConnectionEstablished, setWebsocketConnectionEstablished] =
-    useState(false)
   const { setLeadingText, setTrailingText } = useContext(
     LeadingAndTralingTextContext,
   )
@@ -40,7 +38,6 @@ function TypingArea() {
       const ws = new WebSocket('ws://localhost:8000')
       ws.onopen = () => {
         console.log('Connected to websocket server')
-        setWebsocketConnectionEstablished(true)
       }
       ws.onmessage = handleMessage
 
@@ -48,20 +45,6 @@ function TypingArea() {
     }
     connectWebSocket()
   }, [websocketConnection.current])
-
-  function sendKeypress(event: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (!websocketConnectionEstablished) {
-      return
-    }
-
-    const key = event.key
-    // Needed to exclude control keys
-    if (key != 'Backspace' && key.length > 1) {
-      return
-    }
-    websocketConnection.current?.send(key)
-    console.log('Key press sent:', key)
-  }
 
   const [currentCursorIndex, setCurrentCursorIndex] = useState(0)
 
