@@ -1,24 +1,9 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import './TypingArea.css'
 import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocusedContext'
 import { TextMessage } from '../shared/dtos/message'
 import { LeadingAndTralingTextContext } from './context/LeadingAndTralingTextContext'
-
-function trackText(text: string) {
-  const trackedText = text.split('')
-  let currentCharIndex = 0
-
-  return function (key: string) {
-    const currentChar = trackedText[currentCharIndex]
-    const nextCharIndex = currentCharIndex + 1
-    currentCharIndex = nextCharIndex
-
-    if (key != currentChar) {
-      return false
-    }
-    return true
-  }
-}
+import { trackText } from './utils/trackText'
 
 let checkKey: (_: string) => boolean
 
