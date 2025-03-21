@@ -84,11 +84,14 @@ function TypingArea() {
     event: React.KeyboardEvent<HTMLTextAreaElement>,
   ) {
     const key = event.key
-    if (key !== 'Backspace' && key.length > 1) {
+    const keyIsControlKey = key !== 'Backspace' && key.length > 1
+    const keyIsOutOfBounds = key === 'Backspace' && currentCursorIndex == 0
+
+    if (keyIsControlKey || keyIsOutOfBounds) {
       return
     }
 
-    if (key === 'Backspace' && currentCursorIndex > 0) {
+    if (key === 'Backspace') {
       setCurrentCursorIndex((prevCursorIndex) => prevCursorIndex - 1)
     } else {
       setCurrentCursorIndex((prevCursorIndex) => prevCursorIndex + 1)
