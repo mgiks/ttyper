@@ -25,8 +25,7 @@ let checkKey: (_: string) => boolean
 function TypingArea() {
   const typingAreaRef = useRef<HTMLTextAreaElement>(null)
   const isTypingContainerFocused = useContext(IsTypingContainerFocusedContext)
-  const websocketConnection =
-    useRef(new WebSocket('ws://localhost:8000')).current
+  const websocketConnection = useRef<WebSocket | null>(null)
   const [websocketConnectionEstablished, setWebsocketConnectionEstablished] =
     useState(false)
   const { setLeadingText, setTrailingText } = useContext(
@@ -35,12 +34,11 @@ function TypingArea() {
   const [textArray, setTextArray] = useState([''])
 
   useEffect(() => {
-    websocketConnection.addEventListener('open', (_) => {
-      console.log('Connected to websocket server')
-      setWebsocketConnectionEstablished(true)
-    })
+    if (websocketConnection.current) {
+      return
+    }
 
-    const handleMessage = (e: MessageEvent) => {
+    function handleMessage(e: MessageEvent) {
       const message: TextMessage = JSON.parse(e.data)
       const messageType = message.messageType
       const messageData = message.data
@@ -53,12 +51,18 @@ function TypingArea() {
       }
     }
 
-    websocketConnection.addEventListener('message', handleMessage)
+    function connectWebSocket() {
+      const ws = new WebSocket('ws://localhost:8000')
+      ws.onopen = () => {
+        console.log('Connected to websocket server')
+        setWebsocketConnectionEstablished(true)
+      }
+      ws.onmessage = handleMessage
 
-    return () => {
-      websocketConnection.removeEventListener('message', handleMessage)
+      websocketConnection.current = ws
     }
-  }, [websocketConnection])
+    connectWebSocket()
+  }, [websocketConnection.current])
 
   function sendKeypress(event: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (!websocketConnectionEstablished) {
@@ -66,14 +70,11 @@ function TypingArea() {
     }
 
     const key = event.key
-
     // Needed to exclude control keys
     if (key != 'Backspace' && key.length > 1) {
       return
     }
-
-    websocketConnection.send(key)
-
+    websocketConnection.current?.send(key)
     console.log('Key press sent:', key)
   }
 
@@ -83,7 +84,6 @@ function TypingArea() {
     event: React.KeyboardEvent<HTMLTextAreaElement>,
   ) {
     const key = event.key
-
     if (key !== 'Backspace' && key.length > 1) {
       return
     }
@@ -93,7 +93,6 @@ function TypingArea() {
     } else {
       setCurrentCursorIndex((prevCursorIndex) => prevCursorIndex + 1)
     }
-
     console.log(currentCursorIndex)
   }
 
