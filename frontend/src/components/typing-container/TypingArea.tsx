@@ -93,7 +93,6 @@ function TypingArea() {
     } else {
       setCurrentCursorIndex((prevCursorIndex) => prevCursorIndex + 1)
     }
-    console.log(currentCursorIndex)
   }
 
   function updateText() {
