@@ -8,15 +8,16 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/mgiks/ttyper/hashing"
 )
 
-type database struct {
-	url     string
-	pool    *pgxpool.Pool
-	context context.Context
+type Database struct {
+	Url     string
+	Pool    *pgxpool.Pool
+	Context context.Context
 }
 
-func ConnectToDB(ctx context.Context) *database {
+func ConnectToDB(ctx context.Context) *Database {
 	envs := map[string]string{
 		"dbPass": "POSTGRES_PASSWORD",
 		"dbPort": "POSTGRES_PORT",
@@ -48,35 +49,72 @@ func ConnectToDB(ctx context.Context) *database {
 
 	dbPool, err := pgxpool.New(ctx, dbUrl)
 	if err != nil {
-		log.Fatalf("Unable to connect to database: %v\n", err)
+		log.Fatalf("Unable to connect to Database: %v\n", err)
 	}
 
-	db := database{url: dbUrl, pool: dbPool, context: ctx}
+	db := Database{Url: dbUrl, Pool: dbPool, Context: ctx}
 
-	err = db.pool.Ping(ctx)
+	err = db.Pool.Ping(ctx)
 	if err != nil {
-		log.Fatalf("Unable to ping database: %v\n", err)
+		log.Fatalf("Unable to ping Database: %v\n", err)
 	}
 
 	return &db
 }
 
-func (db *database) Query(query string, args ...any) *pgx.Rows {
-	rows, err := db.pool.Query(db.context, query, args...)
+func (db *Database) Query(query string, args ...any) (pgx.Rows, error) {
+	rows, err := db.Pool.Query(db.Context, query, args...)
 	if err != nil {
-		log.Fatalf("Query `%v` failed: %v\n", query, err)
+		log.Printf("Query `%v` failed: %v\n", query, err)
+		return nil, err
 	}
 
-	return &rows
+	return rows, err
 }
 
-func (db *database) AddText(text string, uploaderName string) *pgx.Rows {
-	rows := db.Query(
+func (db *Database) QueryRow(query string, args ...any) pgx.Row {
+	row := db.Pool.QueryRow(db.Context, query, args...)
+
+	return row
+}
+
+func (db *Database) AddText(text string, uploaderName string) (pgx.Rows, error) {
+	rows, err := db.Query(
 		`INSERT INTO "text"(content, uploader_name) 
 		VALUES ($1, $2) RETURNING text, uploader_name`,
 		text,
 		uploaderName,
 	)
+	if err != nil {
+		return nil, err
+	}
 
-	return rows
+	return rows, err
+}
+
+func (db *Database) AddUser(name string, email string, password string) (pgx.Rows, error) {
+	salt, err := hashing.GenerateSalt()
+	if err != nil {
+		return nil, err
+	}
+
+	hashedPassword := hashing.HashAndSalt(password, salt)
+	rows, err := db.Query(
+		`INSERT INTO "user"(username, email, password)
+		VALUES ($1, $2, $3) RETURNING username, email`,
+		name,
+		email,
+		hashedPassword,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return rows, nil
+}
+
+func (db *Database) GetRandomText() pgx.Row {
+	row := db.QueryRow(`SELECT id, content, submitter, source FROM "text" ORDER BY RANDOM()`)
+
+	return row
 }

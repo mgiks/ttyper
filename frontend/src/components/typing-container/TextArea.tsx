@@ -1,11 +1,15 @@
+import { useContext } from 'react'
 import Cursor from './Cursor'
 import './TextArea.css'
+import { LeadingAndTralingTextContext } from './context/LeadingAndTralingTextContext'
 
-function TextArea(props: { text: string }) {
+function TextArea() {
+  const { leadingText, trailingText } = useContext(LeadingAndTralingTextContext)
   return (
     <div id='text-area'>
+      <span className='unselectable-text'>{leadingText}</span>
       <Cursor />
-      <span className='unselectable-text'>{props.text}</span>
+      <span className='unselectable-text'>{trailingText}</span>
     </div>
   )
 }
