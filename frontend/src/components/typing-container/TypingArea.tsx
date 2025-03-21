@@ -96,12 +96,12 @@ function TypingArea() {
     console.log(currentCursorIndex)
   }
 
-  const updateText = useCallback(() => {
+  function updateText() {
     setLeadingText(textArray.slice(0, currentCursorIndex).join(''))
     setTrailingText(textArray.slice(currentCursorIndex).join(''))
-  }, [currentCursorIndex])
+  }
 
-  useEffect(updateText, [currentCursorIndex, textArray])
+  useEffect(updateText, [currentCursorIndex])
 
   function toggleFocus() {
     const typingArea = typingAreaRef.current!
