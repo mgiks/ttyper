@@ -1,4 +1,4 @@
-export function trackText(text: string) {
+export function trackTextForWrongKeys(text: string) {
   const trackedText = text.split('')
   let currentCharIndex = 0
   let wrongKeyIndex = -1
@@ -14,18 +14,11 @@ export function trackText(text: string) {
 
     if (currentChar === key && charIndex <= wrongKeyIndex) {
       wrongKeyIndex = -1
-      return true
     }
-
-    if (wrongKeyIndex !== -1) {
-      return false
-    }
-
-    if (key !== currentChar) {
+    if (key !== currentChar && wrongKeyIndex === -1) {
       wrongKeyIndex = charIndex
-      return false
     }
 
-    return true
+    return wrongKeyIndex
   }
 }

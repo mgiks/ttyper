@@ -3,9 +3,9 @@ import './TypingArea.css'
 import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocusedContext'
 import { TextMessage } from '../shared/dtos/message'
 import { LeadingAndTralingTextContext } from './context/LeadingAndTralingTextContext'
-import { trackText } from './utils/trackText'
+import { trackTextForWrongKeys } from './utils/trackTextForWrongKeys'
 
-let checkKey: (_: string) => boolean | undefined
+let getWrongKeyIndex: (_: string) => number | undefined
 
 function TypingArea() {
   const typingAreaRef = useRef<HTMLTextAreaElement>(null)
@@ -30,7 +30,7 @@ function TypingArea() {
         const text = messageData.text
         setTextArray(text.split(''))
         setTrailingText(text)
-        checkKey = trackText(text)
+        getWrongKeyIndex = trackTextForWrongKeys(text)
       }
     }
 
@@ -75,7 +75,7 @@ function TypingArea() {
     if (keyIsControlKey) {
       return
     }
-    checkKey(key)
+    getWrongKeyIndex(key)
     setCursorPosition(key)
   }
 
