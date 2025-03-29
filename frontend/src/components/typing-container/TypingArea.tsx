@@ -4,12 +4,14 @@ import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocu
 import { TextMessage } from '../shared/dtos/message'
 import { LeadingAndTralingTextContext } from './context/LeadingAndTralingTextContext'
 import { trackTextForWrongKeys } from './utils/trackTextForWrongKeys'
+import { WrongTextStartIndexContext } from './context/WrongTextStartIndexContext'
 
 let getWrongKeyIndex: (_: string) => number | undefined
 
 function TypingArea() {
   const typingAreaRef = useRef<HTMLTextAreaElement>(null)
   const isTypingContainerFocused = useContext(IsTypingContainerFocusedContext)
+  const { setWrongTextStartIndex } = useContext(WrongTextStartIndexContext)
   const websocketConnection = useRef<WebSocket | null>(null)
   const { setLeadingText, setTrailingText } = useContext(
     LeadingAndTralingTextContext,
@@ -75,7 +77,10 @@ function TypingArea() {
     if (keyIsControlKey) {
       return
     }
-    getWrongKeyIndex(key)
+    const wrongKeyIndex = getWrongKeyIndex(key)
+    if (wrongKeyIndex) {
+      setWrongTextStartIndex(wrongKeyIndex)
+    }
     setCursorPosition(key)
   }
 
