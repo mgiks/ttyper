@@ -7,7 +7,7 @@ export function useOutsideClickAndKeyPress<THTMLElement extends HTMLElement>(
   keypressCallback: () => any,
   refObj: React.RefObject<THTMLElement>,
 ) {
-  let ref = typeof refObj == 'undefined' ? useRef<THTMLElement>(null) : refObj
+  let ref = typeof refObj === 'undefined' ? useRef<THTMLElement>(null) : refObj
 
   useOutsideClick<THTMLElement>(clickCallback, ref)
   useOutsideKeypress<THTMLElement>(keypressCallback, ref)

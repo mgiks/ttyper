@@ -1,8 +1,11 @@
 #inactivity-curtain {
   background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
   position: absolute;
+  font-size: 30px;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 10000;
 }

@@ -1,33 +1,18 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import './TypingArea.css'
 import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocusedContext'
 import { TextMessage } from '../shared/dtos/message'
 import { LeadingAndTralingTextContext } from './context/LeadingAndTralingTextContext'
+import { trackTextForWrongKeys } from './utils/trackTextForWrongKeys'
+import { WrongTextStartIndexContext } from './context/WrongTextStartIndexContext'
 
-function trackText(text: string) {
-  const trackedText = text.split('')
-  let currentCharIndex = 0
-
-  return function (key: string) {
-    const currentChar = trackedText[currentCharIndex]
-    const nextCharIndex = currentCharIndex + 1
-    currentCharIndex = nextCharIndex
-
-    if (key != currentChar) {
-      return false
-    }
-    return true
-  }
-}
-
-let checkKey: (_: string) => boolean
+let getWrongKeyIndex: (_: string) => number | undefined
 
 function TypingArea() {
   const typingAreaRef = useRef<HTMLTextAreaElement>(null)
   const isTypingContainerFocused = useContext(IsTypingContainerFocusedContext)
+  const { setWrongTextStartIndex } = useContext(WrongTextStartIndexContext)
   const websocketConnection = useRef<WebSocket | null>(null)
-  const [websocketConnectionEstablished, setWebsocketConnectionEstablished] =
-    useState(false)
   const { setLeadingText, setTrailingText } = useContext(
     LeadingAndTralingTextContext,
   )
@@ -47,7 +32,7 @@ function TypingArea() {
         const text = messageData.text
         setTextArray(text.split(''))
         setTrailingText(text)
-        checkKey = trackText(text)
+        getWrongKeyIndex = trackTextForWrongKeys(text)
       }
     }
 
@@ -55,7 +40,6 @@ function TypingArea() {
       const ws = new WebSocket('ws://localhost:8000')
       ws.onopen = () => {
         console.log('Connected to websocket server')
-        setWebsocketConnectionEstablished(true)
       }
       ws.onmessage = handleMessage
 
@@ -64,30 +48,11 @@ function TypingArea() {
     connectWebSocket()
   }, [websocketConnection.current])
 
-  function sendKeypress(event: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (!websocketConnectionEstablished) {
-      return
-    }
-
-    const key = event.key
-    // Needed to exclude control keys
-    if (key != 'Backspace' && key.length > 1) {
-      return
-    }
-    websocketConnection.current?.send(key)
-    console.log('Key press sent:', key)
-  }
-
   const [currentCursorIndex, setCurrentCursorIndex] = useState(0)
 
-  function setCursorPosition(
-    event: React.KeyboardEvent<HTMLTextAreaElement>,
-  ) {
-    const key = event.key
-    const keyIsControlKey = key !== 'Backspace' && key.length > 1
-    const keyIsOutOfBounds = key === 'Backspace' && currentCursorIndex == 0
-
-    if (keyIsControlKey || keyIsOutOfBounds) {
+  function setCursorPosition(key: string) {
+    const keyIsOutOfBounds = key === 'Backspace' && currentCursorIndex === 0
+    if (keyIsOutOfBounds) {
       return
     }
 
@@ -102,21 +67,33 @@ function TypingArea() {
     setLeadingText(textArray.slice(0, currentCursorIndex).join(''))
     setTrailingText(textArray.slice(currentCursorIndex).join(''))
   }
-
   useEffect(updateText, [currentCursorIndex])
+
+  function handleKeypress(
+    event: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) {
+    const key = event.key
+    const keyIsControlKey = key !== 'Backspace' && key.length > 1
+    if (keyIsControlKey) {
+      return
+    }
+    const wrongKeyIndex = getWrongKeyIndex(key)
+    if (wrongKeyIndex) {
+      setWrongTextStartIndex(wrongKeyIndex)
+    }
+    setCursorPosition(key)
+  }
 
   function toggleFocus() {
     const typingArea = typingAreaRef.current!
-
     isTypingContainerFocused ? typingArea.focus() : typingArea.blur()
   }
-
   useEffect(toggleFocus, [isTypingContainerFocused])
 
   return (
     <textarea
       ref={typingAreaRef}
-      onKeyDown={setCursorPosition}
+      onKeyDown={handleKeypress}
       id='typing-area'
       autoFocus
     />
