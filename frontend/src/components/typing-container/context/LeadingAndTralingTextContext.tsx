@@ -1,6 +1,6 @@
 import { createContext } from 'react'
 
-const leadingAndTrailingState = {
+const leadingAndTrailingTextState = {
   leadingText: '',
   setLeadingText: (_: string) => {},
   trailingText: '',
@@ -8,5 +8,5 @@ const leadingAndTrailingState = {
 }
 
 export const LeadingAndTralingTextContext = createContext(
-  leadingAndTrailingState,
+  leadingAndTrailingTextState,
 )
