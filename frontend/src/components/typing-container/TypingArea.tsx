@@ -5,7 +5,7 @@ import { TextMessage } from '../shared/dtos/message'
 import { LeadingAndTralingTextContext } from './context/LeadingAndTralingTextContext'
 import { trackText } from './utils/trackText'
 
-let checkKey: (_: string) => boolean
+let checkKey: (_: string) => boolean | undefined
 
 function TypingArea() {
   const typingAreaRef = useRef<HTMLTextAreaElement>(null)
@@ -48,14 +48,9 @@ function TypingArea() {
 
   const [currentCursorIndex, setCurrentCursorIndex] = useState(0)
 
-  function setCursorPosition(
-    event: React.KeyboardEvent<HTMLTextAreaElement>,
-  ) {
-    const key = event.key
-    const keyIsControlKey = key !== 'Backspace' && key.length > 1
+  function setCursorPosition(key: string) {
     const keyIsOutOfBounds = key === 'Backspace' && currentCursorIndex == 0
-
-    if (keyIsControlKey || keyIsOutOfBounds) {
+    if (keyIsOutOfBounds) {
       return
     }
 
@@ -70,21 +65,30 @@ function TypingArea() {
     setLeadingText(textArray.slice(0, currentCursorIndex).join(''))
     setTrailingText(textArray.slice(currentCursorIndex).join(''))
   }
-
   useEffect(updateText, [currentCursorIndex])
+
+  function handleKeypress(
+    event: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) {
+    const key = event.key
+    const keyIsControlKey = key !== 'Backspace' && key.length > 1
+    if (keyIsControlKey) {
+      return
+    }
+    checkKey(key)
+    setCursorPosition(key)
+  }
 
   function toggleFocus() {
     const typingArea = typingAreaRef.current!
-
     isTypingContainerFocused ? typingArea.focus() : typingArea.blur()
   }
-
   useEffect(toggleFocus, [isTypingContainerFocused])
 
   return (
     <textarea
       ref={typingAreaRef}
-      onKeyDown={setCursorPosition}
+      onKeyDown={handleKeypress}
       id='typing-area'
       autoFocus
     />
