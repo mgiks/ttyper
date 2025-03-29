@@ -51,7 +51,7 @@ function TypingArea() {
   const [currentCursorIndex, setCurrentCursorIndex] = useState(0)
 
   function setCursorPosition(key: string) {
-    const keyIsOutOfBounds = key === 'Backspace' && currentCursorIndex == 0
+    const keyIsOutOfBounds = key === 'Backspace' && currentCursorIndex === 0
     if (keyIsOutOfBounds) {
       return
     }

@@ -4,7 +4,7 @@ export function useOutsideClick<THTMLElement extends HTMLElement>(
   callback: () => any,
   refObj?: React.RefObject<THTMLElement>,
 ) {
-  let ref = typeof refObj == 'undefined' ? useRef<THTMLElement>(null) : refObj
+  let ref = typeof refObj === 'undefined' ? useRef<THTMLElement>(null) : refObj
   const documentRef = useRef<Document>(document)
   const event = 'pointerdown'
 
