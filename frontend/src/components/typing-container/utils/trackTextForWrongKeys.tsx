@@ -3,11 +3,21 @@ export function trackTextForWrongKeys(text: string) {
   let currentCharIndex = 0
   let wrongKeyIndex = -1
 
+  function decreaseCurrentCharIndex() {
+    currentCharIndex -= 1
+  }
+
+  function unsetWrongKeyIndex() {
+    wrongKeyIndex = -1
+  }
+
   return function (key: string) {
     if (key === 'Backspace') {
-      currentCharIndex > 0 ? currentCharIndex -= 1 : wrongKeyIndex = -1
+      currentCharIndex > 0 && decreaseCurrentCharIndex()
+      currentCharIndex < wrongKeyIndex && unsetWrongKeyIndex()
       return
     }
+
     const currentChar = trackedText[currentCharIndex]
     const charIndex = currentCharIndex
     currentCharIndex += 1
