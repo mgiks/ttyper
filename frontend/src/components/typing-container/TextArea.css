@@ -1,5 +1,6 @@
 #text-area {
   margin: 15px;
+  position: relative;
   padding: 0px;
   font-size: 1.4rem;
   overflow: auto;
