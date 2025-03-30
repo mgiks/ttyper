@@ -55,7 +55,6 @@ function TypingArea() {
     if (keyIsOutOfBounds) {
       return
     }
-
     if (key === 'Backspace') {
       setCurrentCursorIndex((prevCursorIndex) => prevCursorIndex - 1)
     } else {
@@ -78,7 +77,7 @@ function TypingArea() {
       return
     }
     const wrongKeyIndex = getWrongKeyIndex(key)
-    if (wrongKeyIndex) {
+    if (wrongKeyIndex !== undefined) {
       setWrongTextStartIndex(wrongKeyIndex)
     }
     setCursorPosition(key)
