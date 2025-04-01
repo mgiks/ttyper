@@ -5,4 +5,11 @@
   font-size: 1.4rem;
   overflow-y: scroll;
   overscroll-behavior-y: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#text-area::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
 }
