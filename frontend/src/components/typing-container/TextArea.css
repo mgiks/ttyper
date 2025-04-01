@@ -5,23 +5,4 @@
   font-size: 1.4rem;
   overflow-y: scroll;
   overscroll-behavior-y: none;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-#text-area::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-@media (max-width: 865px) {
-  #text-area {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 600px) {
-  #text-area {
-    font-size: 0.6rem;
-  }
 }
