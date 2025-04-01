@@ -3,6 +3,7 @@
   position: relative;
   padding: 0px;
   font-size: 1.4rem;
+  line-height: 1.4;
   overflow-y: scroll;
   overscroll-behavior-y: none;
   scrollbar-width: none;
