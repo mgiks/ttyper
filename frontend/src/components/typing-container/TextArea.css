@@ -3,17 +3,14 @@
   position: relative;
   padding: 0px;
   font-size: 1.4rem;
-  overflow: auto;
+  line-height: 1.4;
+  overflow-y: scroll;
+  overscroll-behavior-y: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-@media (max-width: 865px) {
-  #text-area {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 600px) {
-  #text-area {
-    font-size: 0.6rem;
-  }
+#text-area::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
 }

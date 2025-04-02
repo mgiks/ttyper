@@ -23,12 +23,12 @@ function TypingContainer() {
     setIsTypingContainerFocused(0)
   }
 
-  const ref = useRef(null)
+  const ref = useRef<HTMLDivElement>(null)
 
   const typingContainerRef = useOutsideClickAndKeyPress<HTMLDivElement>(
     unfocusTypingContainer,
     focusTypingContainer,
-    ref,
+    ref as React.RefObject<HTMLDivElement>,
   )
 
   return (
