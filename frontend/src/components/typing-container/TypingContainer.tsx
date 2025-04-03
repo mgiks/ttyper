@@ -4,7 +4,7 @@ import TypingArea from './TypingArea'
 import InactivityCurtain from './InactivityCurtain'
 import { useRef, useState } from 'react'
 import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocusedContext'
-import { useOutsideClickAndKeyPress } from '../shared/hooks/useOutsideClickAndKeypress'
+import { useOutsideClickAndKeyPress } from '../../hooks/useOutsideClickAndKeypress'
 import { LeadingAndTralingTextContext } from './context/LeadingAndTralingTextContext'
 import { WrongTextStartIndexContext } from './context/WrongTextStartIndexContext'
 
