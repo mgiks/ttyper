@@ -18,8 +18,8 @@ function LeadingText() {
 
   return (
     <>
-      <span id='right-text'>{rightText}</span>
-      <span id='wrong-text'>{wrongText}</span>
+      <span id='right-text' className='unselectable-text'>{rightText}</span>
+      <span id='wrong-text' className='unselectable-text'>{wrongText}</span>
     </>
   )
 }
