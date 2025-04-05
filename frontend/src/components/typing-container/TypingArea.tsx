@@ -1,10 +1,10 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import './TypingArea.css'
 import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocusedContext'
-import { TextMessage } from '../shared/dtos/message'
 import { LeadingAndTralingTextContext } from './context/LeadingAndTralingTextContext'
 import { trackTextForWrongKeys } from './utils/trackTextForWrongKeys'
 import { WrongTextStartIndexContext } from './context/WrongTextStartIndexContext'
+import { TextMessage } from './dtos/message'
 
 let getWrongKeyIndex: (_: string) => number | undefined
 
