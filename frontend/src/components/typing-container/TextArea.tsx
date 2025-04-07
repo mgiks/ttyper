@@ -1,7 +1,8 @@
 import { useContext, useEffect, useRef } from 'react'
 import './TextArea.css'
-import { LeadingAndTralingTextContext } from './context/LeadingAndTralingTextContext'
 import { WrongTextStartIndexContext } from './context/WrongTextStartIndexContext'
+import { LeadingTextContext } from './context/LeadingTextContext'
+import { TrailingTextContext } from './context/TrailingTextContext'
 
 function TextArea() {
   const textAreaRef = useRef<HTMLDivElement>(null)
@@ -24,7 +25,8 @@ function TextArea() {
     }
   })
 
-  const { leadingText } = useContext(LeadingAndTralingTextContext)
+  const { leadingText } = useContext(LeadingTextContext)
+  const { trailingText } = useContext(TrailingTextContext)
   const { wrongTextStartIndex } = useContext(WrongTextStartIndexContext)
   const rightText = wrongTextStartIndex > -1
     ? leadingText.slice(0, wrongTextStartIndex)
@@ -32,7 +34,6 @@ function TextArea() {
   const wrongText = wrongTextStartIndex > -1
     ? leadingText.slice(wrongTextStartIndex)
     : ''
-  const { trailingText } = useContext(LeadingAndTralingTextContext)
 
   return (
     <div id='text-area' ref={textAreaRef}>
