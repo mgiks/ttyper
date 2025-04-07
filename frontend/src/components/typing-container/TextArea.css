@@ -7,6 +7,14 @@
   overflow-y: hidden;
 }
 
+#wrong-text {
+  background-color: red;
+}
+
+#right-text {
+  color: green;
+}
+
 #cursor {
   border: 1px solid black;
   position: absolute;
