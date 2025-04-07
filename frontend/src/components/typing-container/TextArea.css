@@ -4,13 +4,19 @@
   padding: 0px;
   font-size: 1.4rem;
   line-height: 1.4;
-  overflow-y: scroll;
-  overscroll-behavior-y: none;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  overflow-y: hidden;
 }
 
-#text-area::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
+#wrong-text {
+  background-color: red;
+}
+
+#right-text {
+  color: green;
+}
+
+#cursor {
+  border: 1px solid black;
+  position: absolute;
+  height: 1.5em;
 }

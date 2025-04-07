@@ -1,10 +1,11 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import './TypingArea.css'
 import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocusedContext'
-import { LeadingAndTralingTextContext } from './context/LeadingAndTralingTextContext'
 import { trackTextForWrongKeys } from './utils/trackTextForWrongKeys'
 import { WrongTextStartIndexContext } from './context/WrongTextStartIndexContext'
 import { TextMessage } from './dtos/message'
+import { LeadingTextContext } from './context/LeadingTextContext'
+import { TrailingTextContext } from './context/TrailingTextContext'
 
 let getWrongKeyIndex: (_: string) => number | undefined
 
@@ -13,9 +14,8 @@ function TypingArea() {
   const isTypingContainerFocused = useContext(IsTypingContainerFocusedContext)
   const { setWrongTextStartIndex } = useContext(WrongTextStartIndexContext)
   const websocketConnection = useRef<WebSocket | null>(null)
-  const { setLeadingText, setTrailingText } = useContext(
-    LeadingAndTralingTextContext,
-  )
+  const { setLeadingText } = useContext(LeadingTextContext)
+  const { setTrailingText } = useContext(TrailingTextContext)
   const [textArray, setTextArray] = useState([''])
 
   useEffect(() => {
