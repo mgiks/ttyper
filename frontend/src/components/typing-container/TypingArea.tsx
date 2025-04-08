@@ -1,21 +1,25 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './TypingArea.css'
-import { IsTypingContainerFocusedContext } from './context/IsTypingContainerFocusedContext'
 import { trackTextForWrongKeys } from './utils/trackTextForWrongKeys'
-import { WrongTextStartIndexContext } from './context/WrongTextStartIndexContext'
 import { TextMessage } from './dtos/message'
-import { LeadingTextContext } from './context/LeadingTextContext'
-import { TrailingTextContext } from './context/TrailingTextContext'
 
 let getWrongKeyIndex: (_: string) => number | undefined
 
-function TypingArea() {
+function TypingArea(
+  {
+    isTypingContainerFocused,
+    setLeadingText,
+    setTrailingText,
+    setWrongTextStartIndex,
+  }: {
+    isTypingContainerFocused: number
+    setLeadingText: (_: React.SetStateAction<string>) => void
+    setTrailingText: (_: React.SetStateAction<string>) => void
+    setWrongTextStartIndex: (_: React.SetStateAction<number>) => void
+  },
+) {
   const typingAreaRef = useRef<HTMLTextAreaElement>(null)
-  const isTypingContainerFocused = useContext(IsTypingContainerFocusedContext)
-  const { setWrongTextStartIndex } = useContext(WrongTextStartIndexContext)
   const websocketConnection = useRef<WebSocket | null>(null)
-  const { setLeadingText } = useContext(LeadingTextContext)
-  const { setTrailingText } = useContext(TrailingTextContext)
   const [textArray, setTextArray] = useState([''])
 
   useEffect(() => {
@@ -49,7 +53,6 @@ function TypingArea() {
   }, [websocketConnection.current])
 
   const [currentCursorIndex, setCurrentCursorIndex] = useState(0)
-
   function setCursorPosition(key: string) {
     const keyIsOutOfBounds = key === 'Backspace' && currentCursorIndex === 0
     if (keyIsOutOfBounds) {
@@ -68,6 +71,12 @@ function TypingArea() {
   }
   useEffect(updateText, [currentCursorIndex])
 
+  function toggleFocus() {
+    const typingArea = typingAreaRef.current!
+    isTypingContainerFocused ? typingArea.focus() : typingArea.blur()
+  }
+  useEffect(toggleFocus, [isTypingContainerFocused])
+
   function handleKeypress(
     event: React.KeyboardEvent<HTMLTextAreaElement>,
   ) {
@@ -82,12 +91,6 @@ function TypingArea() {
     }
     setCursorPosition(key)
   }
-
-  function toggleFocus() {
-    const typingArea = typingAreaRef.current!
-    isTypingContainerFocused ? typingArea.focus() : typingArea.blur()
-  }
-  useEffect(toggleFocus, [isTypingContainerFocused])
 
   return (
     <textarea
