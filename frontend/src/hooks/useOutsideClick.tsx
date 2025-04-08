@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 
 export function useOutsideClick<THTMLElement extends HTMLElement>(
   callback: () => any,
-  refObj?: React.RefObject<THTMLElement>,
+  refObj?: React.RefObject<THTMLElement | null>,
 ) {
   let ref = typeof refObj === 'undefined' ? useRef<THTMLElement>(null) : refObj
   const documentRef = useRef<Document>(document)
