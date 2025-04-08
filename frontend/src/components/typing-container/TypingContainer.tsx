@@ -12,7 +12,9 @@ function TypingContainer() {
   const [wrongTextStartIndex, setWrongTextStartIndex] = useState(0)
 
   function focusTypingContainer() {
-    setIsTypingContainerFocused(isTypingContainerFocused + 1)
+    setIsTypingContainerFocused((isTypingContainerFocused) =>
+      isTypingContainerFocused + 1
+    )
   }
 
   function unfocusTypingContainer() {

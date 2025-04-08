@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { isControlKey } from '../components/typing-container/utils/isControlKey'
 
 export function useOutsideKeypress<THTMLElement extends HTMLElement>(
   callback: () => any,
@@ -10,9 +11,8 @@ export function useOutsideKeypress<THTMLElement extends HTMLElement>(
 
   useEffect(() => {
     const handleKeypress = (e: KeyboardEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        callback()
-      }
+      if (isControlKey(e.key)) return
+      callback()
     }
     documentRef.current.addEventListener(event, handleKeypress, true)
     return () =>
