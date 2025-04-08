@@ -3,37 +3,20 @@ import './TextArea.css'
 import { WrongTextStartIndexContext } from './context/WrongTextStartIndexContext'
 import { LeadingTextContext } from './context/LeadingTextContext'
 import { TrailingTextContext } from './context/TrailingTextContext'
+import { keepCursorInView } from './utils/keepCursorInView'
+import { getRightText } from './utils/getRightText'
+import { getWrongText } from './utils/getWrongText'
 
 function TextArea() {
   const textAreaRef = useRef<HTMLDivElement>(null)
   const cursorRef = useRef<HTMLSpanElement>(null)
-  useEffect(() => {
-    const cursor = cursorRef.current
-    const textArea = textAreaRef.current
-    if (!cursor || !textArea) {
-      return
-    }
-    const cursorYPosition = cursor.getBoundingClientRect().y
-    const textAreaTopYCoor = textArea.getBoundingClientRect().y
-    const textAreaHeight = textArea.getBoundingClientRect().height
-    const textAreaBottomYCoor = textAreaTopYCoor + textAreaHeight
-    const isCursorInsideTextArea = textAreaTopYCoor < cursorYPosition &&
-      cursorYPosition < textAreaBottomYCoor
-
-    if (!isCursorInsideTextArea) {
-      cursor.scrollIntoView({ behavior: 'smooth' })
-    }
-  })
+  useEffect(() => keepCursorInView(cursorRef, textAreaRef))
 
   const { leadingText } = useContext(LeadingTextContext)
   const { trailingText } = useContext(TrailingTextContext)
   const { wrongTextStartIndex } = useContext(WrongTextStartIndexContext)
-  const rightText = wrongTextStartIndex > -1
-    ? leadingText.slice(0, wrongTextStartIndex)
-    : leadingText
-  const wrongText = wrongTextStartIndex > -1
-    ? leadingText.slice(wrongTextStartIndex)
-    : ''
+  const rightText = getRightText(leadingText, wrongTextStartIndex)
+  const wrongText = getWrongText(leadingText, wrongTextStartIndex)
 
   return (
     <div id='text-area' ref={textAreaRef}>
