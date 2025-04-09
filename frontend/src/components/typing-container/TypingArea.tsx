@@ -5,6 +5,7 @@ import { TextMessage } from './dtos/message'
 import { connectWebSocket } from './utils/connectWebSocket'
 import { toggleFocusOfTypingArea } from './utils/toggleFocusOfTypingArea'
 import { isControlKey } from './utils/isControlKey'
+import { useStartedTypingStore } from '../../store-hooks/useStartedTypingStore'
 
 let getWrongKeyIndex: (_: string) => number | undefined
 
@@ -57,6 +58,9 @@ function TypingArea(
   }
   useEffect(updateText, [currentCursorIndex])
 
+  const setIsTypingToTrue = useStartedTypingStore((state) =>
+    state.setIsTypingToTrue
+  )
   function handleKeypress(
     event: React.KeyboardEvent<HTMLTextAreaElement>,
   ) {
@@ -65,6 +69,7 @@ function TypingArea(
     const wrongKeyIndex = getWrongKeyIndex(key)
     wrongKeyIndex !== undefined && setWrongTextStartIndex(wrongKeyIndex)
     setCursorPosition(key)
+    setIsTypingToTrue()
   }
 
   return (

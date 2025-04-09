@@ -1,9 +1,9 @@
-import TypingContainer from './components/typing-container/TypingContainer.js'
+import TypingContainerWithStats from './components/typing-container-with-stats/TypingContainerWithStats'
 
 function App() {
   return (
     <>
-      <TypingContainer />
+      <TypingContainerWithStats />
     </>
   )
 }
