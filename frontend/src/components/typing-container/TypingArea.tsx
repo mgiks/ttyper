@@ -5,7 +5,9 @@ import { TextMessage } from './dtos/message'
 import { connectWebSocket } from './utils/connectWebSocket'
 import { toggleFocusOfTypingArea } from './utils/toggleFocusOfTypingArea'
 import { isControlKey } from './utils/isControlKey'
-import { useStartedTypingStore } from '../../store-hooks/useStartedTypingStore'
+import { useStartedAndDoneTypingStore } from '../../store-hooks/useStartedTypingStore'
+import { useTextStore } from '../../store-hooks/useTextStore'
+import { useWrongKeyCountStore } from '../../store-hooks/useWrongKeyCountStore'
 
 let getWrongKeyIndex: (_: string) => number | undefined
 
@@ -30,12 +32,14 @@ function TypingArea(
 
   const websocketConnection = useRef<WebSocket>(null)
   const [textArray, setTextArray] = useState([''])
+  const setText = useTextStore((state) => state.setText)
   useEffect(() => {
     if (websocketConnection.current) return
     function handleMessage(e: MessageEvent) {
       const message: TextMessage = JSON.parse(e.data)
       if (message.messageType === 'text') {
         const text = message.data.text
+        setText(text)
         setTextArray(text.split(''))
         setTrailingText(text)
         getWrongKeyIndex = trackTextForWrongKeys(text)
@@ -52,14 +56,26 @@ function TypingArea(
       prevCursorIndex + (key === 'Backspace' ? -1 : 1)
     )
   }
+
+  const setIsDoneTypingToTrue = useStartedAndDoneTypingStore((state) =>
+    state.setIsDoneTypingToTrue
+  )
   function updateText() {
-    setLeadingText(textArray.slice(0, currentCursorIndex).join(''))
-    setTrailingText(textArray.slice(currentCursorIndex).join(''))
+    const leadingText = textArray.slice(0, currentCursorIndex).join('')
+    setLeadingText(leadingText)
+    const trailingText = textArray.slice(currentCursorIndex).join('')
+    setTrailingText(trailingText)
+    if (leadingText && !trailingText) {
+      setIsDoneTypingToTrue()
+    }
   }
   useEffect(updateText, [currentCursorIndex])
 
-  const setIsTypingToTrue = useStartedTypingStore((state) =>
+  const setIsTypingToTrue = useStartedAndDoneTypingStore((state) =>
     state.setIsTypingToTrue
+  )
+  const increaseWrongKeyCount = useWrongKeyCountStore((state) =>
+    state.increaseWrongKeyCount
   )
   function handleKeypress(
     event: React.KeyboardEvent<HTMLTextAreaElement>,
@@ -67,7 +83,12 @@ function TypingArea(
     const key = event.key
     if (isControlKey(key)) return
     const wrongKeyIndex = getWrongKeyIndex(key)
-    wrongKeyIndex !== undefined && setWrongTextStartIndex(wrongKeyIndex)
+    if (wrongKeyIndex !== undefined) {
+      setWrongTextStartIndex(wrongKeyIndex)
+    }
+    if (wrongKeyIndex !== undefined && wrongKeyIndex !== -1) {
+      increaseWrongKeyCount()
+    }
     setCursorPosition(key)
     setIsTypingToTrue()
   }
