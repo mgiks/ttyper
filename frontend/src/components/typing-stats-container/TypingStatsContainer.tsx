@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import './TypingStatsContainer.css'
 import { useStartedAndDoneTypingStore } from '../../store-hooks/useStartedTypingStore'
 import { useTimeToTypeStore } from '../../store-hooks/useTimeToType'
+import { useTextStore } from '../../store-hooks/useTextStore'
+import { getActualWordCount } from './utils/getActualWordCount'
 
 function TypingStatsContainer() {
   const [isStopWatchRunning, setIsStopWatchRunning] = useState(false)
@@ -11,6 +13,8 @@ function TypingStatsContainer() {
   const isDoneTyping = useStartedAndDoneTypingStore((state) =>
     state.isDoneTyping
   )
+  const text = useTextStore((state) => state.text)
+  const rightText = useTextStore((state) => state.rightText)
 
   function startStopWatch() {
     setIsStopWatchRunning(true)
@@ -47,7 +51,14 @@ function TypingStatsContainer() {
 
   return (
     <div id='typing-stats-container'>
-      {secondsElapsed}
+      <div>
+        {secondsElapsed}
+      </div>
+      <div id='word-count'>
+        {getActualWordCount(rightText) +
+          (rightText.length === text.length ? 0 : -1)} /{' '}
+        {getActualWordCount(text)}
+      </div>
     </div>
   )
 }

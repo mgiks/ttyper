@@ -4,6 +4,7 @@ import { keepCursorInView } from './utils/keepCursorInView'
 import { getRightText } from './utils/getRightText'
 import { getWrongText } from './utils/getWrongText'
 import InactivityCurtain from './InactivityCurtain'
+import { useTextStore } from '../../store-hooks/useTextStore'
 
 function TextArea(
   { isTypingContainerFocused, leadingText, trailingText, wrongTextStartIndex }:
@@ -29,7 +30,9 @@ function TextArea(
     }, 750)
   }, [leadingText])
 
+  const setrightText = useTextStore((state) => state.setRightText)
   const rightText = getRightText(leadingText, wrongTextStartIndex)
+  setrightText(rightText)
   const wrongText = getWrongText(leadingText, wrongTextStartIndex)
 
   return (
