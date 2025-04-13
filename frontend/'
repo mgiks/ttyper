@@ -56,17 +56,12 @@ function TypingArea(
       prevCursorIndex + (key === 'Backspace' ? -1 : 1)
     )
   }
-  useEffect(() => {
-    currentCursorIndex > 0 && setCursorToMoved()
-  }, [currentCursorIndex])
 
   const textBeforeCursor = textArray.slice(0, currentCursorIndex).join('')
+  setTextBeforeCursor(textBeforeCursor)
   const textAfterCursor = textArray.slice(currentCursorIndex).join('')
-  useEffect(() => {
-    setTextAfterCursor(textAfterCursor)
-    setTextBeforeCursor(textBeforeCursor)
-    if (textBeforeCursor && !textAfterCursor) finishTyping()
-  })
+  setTextAfterCursor(textAfterCursor)
+  if (textBeforeCursor && !textAfterCursor) finishTyping()
 
   function handleKeypress(
     event: React.KeyboardEvent<HTMLTextAreaElement>,
@@ -79,6 +74,7 @@ function TypingArea(
       wrongKeyIndex > -1 && increaseWrongKeyCount()
     }
     setCursorPosition(key)
+    setCursorToMoved()
   }
 
   return (
