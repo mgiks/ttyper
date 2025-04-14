@@ -13,19 +13,19 @@ function TypingStatsContainer() {
   const isDoneTyping = useIsDoneTyping()
   const text = useText()
   const correctText = useCorrectText()
-  const { setTypingTime } = useTypingStatsActions()
-  const [startTime, setStartTime] = useState(0)
+  const { setTypingEndTime } = useTypingStatsActions()
+  const [typingStartTime, setTypingStartTime] = useState(0)
   const [secondsElapsed, setSecondsElapsed] = useState(0)
   const [isStopWatchRunning, setIsStopWatchRunning] = useState(false)
 
   function startStopWatch() {
     setIsStopWatchRunning(true)
-    setStartTime(Date.now())
+    setTypingStartTime(Date.now())
   }
 
   function stopStopWatch() {
     setIsStopWatchRunning(false)
-    setTypingTime(secondsElapsed)
+    setTypingEndTime(secondsElapsed)
   }
 
   useEffect(() => {
@@ -40,7 +40,7 @@ function TypingStatsContainer() {
   useEffect(() => {
     if (isStopWatchRunning) {
       stopWarchRef.current = setInterval(() => {
-        setSecondsElapsed(Math.round((Date.now() - startTime) / 1000))
+        setSecondsElapsed(Math.round((Date.now() - typingStartTime) / 1000))
       }, 1000)
     } else {
       clearTimeout(stopWarchRef.current)
@@ -49,9 +49,7 @@ function TypingStatsContainer() {
 
   return (
     <div id='typing-stats-container'>
-      <div>
-        {secondsElapsed}
-      </div>
+      <div>{secondsElapsed}</div>
       <div id='word-count'>
         {getActualWordCount(correctText) +
           (correctText.length === text.length ? 0 : -1)} /{' '}

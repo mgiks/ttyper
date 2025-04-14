@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 type TypingStatsActions = {
-  setTypingTime: (typingTime: number) => void
+  setTypingEndTime: (typingTime: number) => void
   increaseWrongKeyCount: () => void
   setCursorToMoved: () => void
   finishTyping: () => void
@@ -24,7 +24,7 @@ const useTypingStatsStore = create<TypingStatsState>()(
     actions: {
       setCursorToMoved: () => set({ cursorMoved: true }),
       finishTyping: () => set({ isDoneTyping: true }),
-      setTypingTime: (typingTime: number) => set({ typingTime: typingTime }),
+      setTypingEndTime: (typingTime: number) => set({ typingTime: typingTime }),
       increaseWrongKeyCount: () =>
         set((state) => ({ wrongKeyCount: state.wrongKeyCount + 1 })),
     },

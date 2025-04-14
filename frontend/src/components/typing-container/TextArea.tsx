@@ -12,7 +12,7 @@ import {
 } from '../../stores/TextStore'
 
 function TextArea(
-  { isTypingContainerFocused }: { isTypingContainerFocused: number },
+  { typingContainerFocusCount }: { typingContainerFocusCount: number },
 ) {
   const textBeforeCursor = useTextBeforeCursor()
   const textAfterCursor = useTextAfterCursor()
@@ -42,7 +42,9 @@ function TextArea(
 
   return (
     <>
-      <InactivityCurtain isTypingContainerFocused={isTypingContainerFocused} />
+      <InactivityCurtain
+        typingContainerFocusCount={typingContainerFocusCount}
+      />
       <div id='text-area' ref={textAreaRef}>
         <span id='correct-text' className='unselectable-text'>
           {correctText}
@@ -51,7 +53,7 @@ function TextArea(
         <span
           id='cursor'
           ref={cursorRef}
-          className={isCurrentlyTyping || !isTypingContainerFocused
+          className={isCurrentlyTyping || typingContainerFocusCount === 0
             ? 'paused'
             : ''}
         >

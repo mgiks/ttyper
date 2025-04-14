@@ -11,7 +11,7 @@ import { useTypingStatsActions } from '../../stores/TypingStatsStore'
 let getWrongKeyIndex: (_: string) => number | undefined
 
 function TypingArea(
-  { isTypingContainerFocused }: { isTypingContainerFocused: number },
+  { typingContainerFocusCount }: { typingContainerFocusCount: number },
 ) {
   const {
     setTextBeforeCursor,
@@ -27,8 +27,8 @@ function TypingArea(
 
   const typingAreaRef = useRef<HTMLTextAreaElement>(null)
   useEffect(
-    () => toggleFocusOfTypingArea(isTypingContainerFocused, typingAreaRef),
-    [isTypingContainerFocused],
+    () => toggleFocusOfTypingArea(typingContainerFocusCount, typingAreaRef),
+    [typingContainerFocusCount],
   )
 
   const websocketConnection = useRef<WebSocket>(null)
@@ -73,12 +73,12 @@ function TypingArea(
   ) {
     const key = event.key
     if (isControlKey(key)) return
-    const wrongKeyIndex = getWrongKeyIndex(key)
-    if (wrongKeyIndex !== undefined) {
-      setWrongTextStartIndex(wrongKeyIndex)
-      wrongKeyIndex > -1 && increaseWrongKeyCount()
-    }
     setCursorPosition(key)
+
+    const wrongKeyIndex = getWrongKeyIndex(key)
+    if (wrongKeyIndex == undefined) return
+    setWrongTextStartIndex(wrongKeyIndex)
+    wrongKeyIndex > -1 && increaseWrongKeyCount()
   }
 
   return (
