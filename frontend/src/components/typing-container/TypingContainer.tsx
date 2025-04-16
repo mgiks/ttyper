@@ -1,7 +1,7 @@
 import './TypingContainer.css'
 import TextArea from './TextArea'
 import TypingArea from './TypingArea'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useOutsideClickAndKeyPress } from '../../hooks/useOutsideClickAndKeypress'
 
 function TypingContainer() {
