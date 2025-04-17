@@ -5,6 +5,7 @@
   font-size: 1.4rem;
   line-height: 1.4;
   overflow-y: hidden;
+  font-kerning: none;
 }
 
 #wrong-text {
