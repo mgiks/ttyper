@@ -1,7 +1,7 @@
 export function toggleFocusOfTypingArea(
-  isTypingContainerFocused: number,
+  typingContainerFocusCount: number,
   typingAreaRef: React.RefObject<HTMLTextAreaElement | null>,
 ) {
   const typingArea = typingAreaRef.current!
-  isTypingContainerFocused ? typingArea.focus() : typingArea.blur()
+  typingContainerFocusCount > 0 ? typingArea.focus() : typingArea.blur()
 }

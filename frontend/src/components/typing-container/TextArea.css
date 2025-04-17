@@ -5,13 +5,14 @@
   font-size: 1.4rem;
   line-height: 1.4;
   overflow-y: hidden;
+  font-kerning: none;
 }
 
 #wrong-text {
   background-color: red;
 }
 
-#right-text {
+#correct-text {
   color: green;
 }
 
@@ -22,8 +23,8 @@
 }
 
 #cursor {
-  border: 1px solid black;
   position: absolute;
+  border: 1px solid black;
   height: 1.5em;
   animation: blinking-cursor 1.25s step-start infinite;
 }

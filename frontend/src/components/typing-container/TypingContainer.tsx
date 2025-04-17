@@ -5,24 +5,18 @@ import { useRef, useState } from 'react'
 import { useOutsideClickAndKeyPress } from '../../hooks/useOutsideClickAndKeypress'
 
 function TypingContainer() {
-  // Not a boolean to allow refocusing when already focused
-  const [isTypingContainerFocused, setIsTypingContainerFocused] = useState(1)
-  const [leadingText, setLeadingText] = useState('')
-  const [trailingText, setTrailingText] = useState('')
-  const [wrongTextStartIndex, setWrongTextStartIndex] = useState(0)
+  // Not a boolean to prevent unfocusing typing area
+  // when clicking on typing container
+  const [focusCount, setFocusCount] = useState(1)
 
   function focusTypingContainer() {
-    setIsTypingContainerFocused((isTypingContainerFocused) =>
-      isTypingContainerFocused + 1
-    )
+    setFocusCount((prevFocusCount) => prevFocusCount + 1)
   }
-
   function unfocusTypingContainer() {
-    setIsTypingContainerFocused(0)
+    setFocusCount(0)
   }
 
   const ref = useRef<HTMLDivElement>(null)
-
   const typingContainerRef = useOutsideClickAndKeyPress<HTMLDivElement>(
     unfocusTypingContainer,
     focusTypingContainer,
@@ -35,18 +29,8 @@ function TypingContainer() {
       id='typing-container'
       onClick={focusTypingContainer}
     >
-      <TypingArea
-        isTypingContainerFocused={isTypingContainerFocused}
-        setLeadingText={setLeadingText}
-        setTrailingText={setTrailingText}
-        setWrongTextStartIndex={setWrongTextStartIndex}
-      />
-      <TextArea
-        isTypingContainerFocused={isTypingContainerFocused}
-        leadingText={leadingText}
-        trailingText={trailingText}
-        wrongTextStartIndex={wrongTextStartIndex}
-      />
+      <TypingArea typingContainerFocusCount={focusCount} />
+      <TextArea typingContainerFocusCount={focusCount} />
     </div>
   )
 }
