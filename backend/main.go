@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/mgiks/ttyper/server"
@@ -13,6 +14,6 @@ func main() {
 	tsMux := typing.NewTypingServer()
 	err := http.ListenAndServe(":8000", tsMux)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }

@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './TypingArea.css'
 import { trackTextForWrongKeys } from './utils/trackTextForWrongKeys'
-import { TextMessage } from './dtos/message'
-import { connectWebSocket } from './utils/connectWebSocket'
+import { RandomTextMessage } from './dtos/message'
 import { toggleFocusOfTypingArea } from './utils/toggleFocusOfTypingArea'
 import { isControlKey } from './utils/isControlKey'
 import { useTextActions } from '../../stores/TextStore'
@@ -31,22 +30,24 @@ function TypingArea(
     [typingContainerFocusCount],
   )
 
-  const websocketConnection = useRef<WebSocket>(null)
   const [textArray, setTextArray] = useState([''])
   useEffect(() => {
-    if (websocketConnection.current) return
-    function handleMessage(e: MessageEvent) {
-      const message: TextMessage = JSON.parse(e.data)
-      if (message.messageType === 'text') {
-        const text = message.data.text
-        setText(text)
-        setTextAfterCursor(text)
-        setTextArray(text.split(''))
-        getWrongKeyIndex = trackTextForWrongKeys(text)
-      }
-    }
-    websocketConnection.current = connectWebSocket(handleMessage)
-  }, [websocketConnection.current])
+    fetch('http://localhost:8000/random-texts')
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json)
+        if (
+          Object.hasOwn(json, 'messageType') &&
+          json.messageType === 'randomText'
+        ) {
+          const randomTextMessage = json as RandomTextMessage
+          const text = randomTextMessage.data.text
+          setTextArray(text.split(''))
+          getWrongKeyIndex = trackTextForWrongKeys(text)
+          setText(text)
+        }
+      })
+  }, [])
 
   const [currentCursorIndex, setCurrentCursorIndex] = useState(0)
   function setCursorPosition(key: string) {

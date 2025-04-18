@@ -1,15 +1,13 @@
 package typing
 
 import (
-	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/coder/websocket"
 	"github.com/mgiks/ttyper/dtos"
 	"github.com/mgiks/ttyper/server"
+	"github.com/mgiks/ttyper/utils"
 )
 
 type typingServer struct {
@@ -18,48 +16,61 @@ type typingServer struct {
 
 func NewTypingServer() *typingServer {
 	ts := &typingServer{}
-	ts.mux.HandleFunc("/", ts.subscribeHandler)
+	// ts.mux.HandleFunc("/", ts.subscribeHandler)
+	ts.mux.HandleFunc("GET /random-texts", ts.getRandomTextHandler)
 
 	return ts
 }
 
-func (ts *typingServer) subscribeHandler(w http.ResponseWriter, r *http.Request) {
-	var acceptOptions *websocket.AcceptOptions = &websocket.AcceptOptions{
-		OriginPatterns: []string{"localhost:5173"},
-	}
+func (ts *typingServer) getRandomTextHandler(w http.ResponseWriter, r *http.Request) {
+	utils.EnableCors(&w)
+	rtm := getRandomTextMessage()
 
-	wsc, err := websocket.Accept(w, r, acceptOptions)
+	jsonRtm, err := json.Marshal(rtm)
 	if err != nil {
-		panic(err)
+		log.Printf("Failed to marshal text to json: %v\n", err)
 	}
 
-	ctx := context.Background()
-	text := getText()
-	err = wsc.Write(ctx, websocket.MessageText, text)
-	if err != nil {
-		log.Printf("Failed to send text: %v\n", err)
-	}
-
-	for {
-		msgType, msg, err := wsc.Read(ctx)
-		if err != nil {
-			panic(err)
-		}
-
-		if msgType == websocket.MessageText {
-			fmt.Println(string(msg))
-		}
-	}
+	w.Write(jsonRtm)
 }
+
+// func (ts *typingServer) subscribeHandler(w http.ResponseWriter, r *http.Request) {
+// 	var acceptOptions = &websocket.AcceptOptions{
+// 		OriginPatterns: []string{"localhost:5173"},
+// 	}
+//
+// 	wsc, err := websocket.Accept(w, r, acceptOptions)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+//
+// 	ctx := context.Background()
+// 	text := getText()
+// 	err = wsc.Write(ctx, websocket.MessageText, text)
+// 	if err != nil {
+// 		log.Printf("Failed to send text: %v\n", err)
+// 	}
+//
+// 	for {
+// 		msgType, msg, err := wsc.Read(ctx)
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+//
+// 		if msgType == websocket.MessageText {
+// 			fmt.Println(string(msg))
+// 		}
+// 	}
+// }
 
 func (ts *typingServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ts.mux.ServeHTTP(w, r)
 }
 
-func getText() []byte {
+func getRandomTextMessage() *dtos.RandomTextMessage {
 	db := server.GetServerConfig().Db
 
-	t := &dtos.Text{}
+	t := &dtos.RandomTextMessage{}
 	t.SetMessageType()
 
 	row := db.GetRandomText()
@@ -69,10 +80,5 @@ func getText() []byte {
 		log.Printf("Failed to get text: %v\n", err)
 	}
 
-	jsonT, err := json.Marshal(t)
-	if err != nil {
-		log.Printf("Failed to marshal text to json: %v\n", err)
-	}
-
-	return jsonT
+	return t
 }

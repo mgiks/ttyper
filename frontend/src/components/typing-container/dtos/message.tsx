@@ -1,16 +1,16 @@
-type MessageType = 'text' | 'keyCheck'
+type MessageType = 'randomText'
 
-interface Message {
-  messageType: MessageType
+export interface Message {
+  type: MessageType
 }
 
-interface TextData {
+interface RandomTextData {
   id: number
   text: string
   submitter: string
   source: string
 }
 
-export interface TextMessage extends Message {
-  data: TextData
+export interface RandomTextMessage extends Message {
+  data: RandomTextData
 }
