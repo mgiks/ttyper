@@ -10,7 +10,10 @@ import { useTypingStatsActions } from '../../stores/TypingStatsStore'
 let getWrongKeyIndex: (_: string) => number | undefined
 
 function TypingArea(
-  { typingContainerFocusCount }: { typingContainerFocusCount: number },
+  { typingContainerFocusCount, textRefreshCount }: {
+    typingContainerFocusCount: number
+    textRefreshCount: number
+  },
 ) {
   const {
     setTextBeforeCursor,
@@ -47,7 +50,7 @@ function TypingArea(
           setText(text)
         }
       })
-  }, [])
+  }, [textRefreshCount])
 
   const [currentCursorIndex, setCurrentCursorIndex] = useState(0)
   function setCursorPosition(key: string) {

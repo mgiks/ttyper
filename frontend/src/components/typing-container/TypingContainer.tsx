@@ -1,7 +1,7 @@
 import './TypingContainer.css'
 import TextArea from './TextArea'
 import TypingArea from './TypingArea'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useOutsideClickAndKeyPress } from '../../hooks/useOutsideClickAndKeypress'
 
 function TypingContainer() {
@@ -23,13 +23,44 @@ function TypingContainer() {
     ref as React.RefObject<HTMLDivElement>,
   )
 
+  const [textRefreshCount, setTextRefreshCount] = useState(0)
+  useEffect(() => {
+    const removeTabDefaultFunctionality = (event: KeyboardEvent) => {
+      event.key === 'Tab' && event.preventDefault()
+    }
+    window.addEventListener(
+      'keydown',
+      removeTabDefaultFunctionality,
+    )
+
+    const increaseTextRefreshCount = (event: KeyboardEvent) => {
+      event.key === 'Tab' &&
+        setTextRefreshCount((prevTextRefreshCount) => prevTextRefreshCount + 1)
+    }
+    typingContainerRef.current?.addEventListener(
+      'keyup',
+      increaseTextRefreshCount,
+    )
+
+    return () => {
+      window.removeEventListener('keydown', removeTabDefaultFunctionality)
+      typingContainerRef.current?.removeEventListener(
+        'keyup',
+        increaseTextRefreshCount,
+      )
+    }
+  })
+
   return (
     <div
       ref={typingContainerRef}
       id='typing-container'
       onClick={focusTypingContainer}
     >
-      <TypingArea typingContainerFocusCount={focusCount} />
+      <TypingArea
+        typingContainerFocusCount={focusCount}
+        textRefreshCount={textRefreshCount}
+      />
       <TextArea typingContainerFocusCount={focusCount} />
     </div>
   )
