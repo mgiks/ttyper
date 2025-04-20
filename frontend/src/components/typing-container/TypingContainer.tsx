@@ -61,7 +61,10 @@ function TypingContainer() {
         typingContainerFocusCount={focusCount}
         textRefreshCount={textRefreshCount}
       />
-      <TextArea typingContainerFocusCount={focusCount} />
+      <TextArea
+        typingContainerRef={typingContainerRef}
+        typingContainerFocusCount={focusCount}
+      />
     </div>
   )
 }
