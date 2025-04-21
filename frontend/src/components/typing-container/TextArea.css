@@ -3,6 +3,7 @@
   position: relative;
   padding: 0px;
   font-size: 1.4rem;
+  white-space: pre-wrap;
   line-height: 1.4;
   overflow-y: hidden;
   font-kerning: none;
