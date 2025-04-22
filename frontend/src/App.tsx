@@ -1,10 +1,15 @@
 import ResultContainer from './components/result-container/ResultContainer'
-import TypingContainerWithStats from './components/typing-container-with-stats/TypingContainerWithStats'
+import TypingContainer from './components/typing-container/TypingContainer'
+import TypingStatsContainer from './components/typing-stats-container/TypingStatsContainer'
+import './App.css'
 
 function App() {
   return (
     <>
-      <TypingContainerWithStats />
+      <div id='typing-container-with-stats'>
+        <TypingContainer />
+        <TypingStatsContainer />
+      </div>
       <ResultContainer />
     </>
   )
