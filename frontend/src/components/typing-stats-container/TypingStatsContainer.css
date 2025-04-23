@@ -2,4 +2,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+}
+
+#stop-watch {
+  position: absolute;
+  left: 50%;
 }

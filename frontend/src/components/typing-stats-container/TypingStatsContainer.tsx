@@ -7,6 +7,7 @@ import {
   useIsDoneTyping,
   useTypingStatsActions,
 } from '../../stores/TypingStatsStore'
+import PlayerModeSwitcher from './PlayerModeSwitcher'
 
 function TypingStatsContainer() {
   const cursorMoved = useCursorMoved()
@@ -49,7 +50,8 @@ function TypingStatsContainer() {
 
   return (
     <div id='typing-stats-container'>
-      <div>{secondsElapsed}</div>
+      <PlayerModeSwitcher />
+      <div id='stop-watch'>{secondsElapsed}</div>
       <div id='word-count'>
         {getActualWordCount(correctText) +
           (correctText.length === text.length ? 0 : -1)} /{' '}

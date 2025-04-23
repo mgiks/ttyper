@@ -1,0 +1,26 @@
+#player-mode-dropdown {
+  border: 1px solid black;
+  position: absolute;
+  height: fit-content;
+  padding: 0px 10px 0px 3px;
+}
+
+#player-mode-dropdown ul {
+  flex-direction: column;
+  list-style-type: none;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0px;
+}
+
+.player-mode-icons {
+  height: 1.3em;
+}
+
+#player-mode-dropdown.visible {
+  visibility: visible;
+}
+
+#player-mode-dropdown.invisible {
+  visibility: hidden;
+}

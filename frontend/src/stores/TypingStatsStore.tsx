@@ -1,10 +1,17 @@
 import { create } from 'zustand'
 
+export enum Modes {
+  Singleplayer = 'singleplayer',
+  Multiplayer = 'multiplayer',
+  PrivateRoom = 'private room',
+}
+
 type TypingStatsActions = {
   setTypingEndTime: (typingTime: number) => void
   increaseWrongKeyCount: () => void
   setCursorToMoved: () => void
   finishTyping: () => void
+  setPlayerMode: (playerMode: Modes) => void
 }
 
 type TypingStatsState = {
@@ -12,6 +19,7 @@ type TypingStatsState = {
   isDoneTyping: boolean
   typingTime: number
   wrongKeyCount: number
+  playerMode: Modes
   actions: TypingStatsActions
 }
 
@@ -21,12 +29,14 @@ const useTypingStatsStore = create<TypingStatsState>()(
     isDoneTyping: false,
     typingTime: 0,
     wrongKeyCount: 0,
+    playerMode: Modes.Singleplayer,
     actions: {
       setCursorToMoved: () => set({ cursorMoved: true }),
       finishTyping: () => set({ isDoneTyping: true }),
       setTypingEndTime: (typingTime: number) => set({ typingTime: typingTime }),
       increaseWrongKeyCount: () =>
         set((state) => ({ wrongKeyCount: state.wrongKeyCount + 1 })),
+      setPlayerMode: (playerMode: Modes) => set({ playerMode: playerMode }),
     },
   }),
 )
@@ -39,5 +49,7 @@ export const useTypingTime = () =>
   useTypingStatsStore((state) => state.typingTime)
 export const useWrongKeyCount = () =>
   useTypingStatsStore((state) => state.wrongKeyCount)
+export const usePlayerMode = () =>
+  useTypingStatsStore((state) => state.playerMode)
 export const useTypingStatsActions = () =>
   useTypingStatsStore((state) => state.actions)
