@@ -5,13 +5,14 @@ import { getWordCount } from './getWordCount'
 
 export function getTypingSpeedAndAccuracy(
   text: string,
-  typingTime: number,
+  typingTimeInSeconds: number,
   errors: number,
 ) {
+  const typingTimeInMinutes = typingTimeInSeconds / 60
   const wordCount = getWordCount(text)
-  const GWPM = calculateGWPM(wordCount, typingTime)
-  const NWPM = calculateNWPM(GWPM, errors, typingTime)
-  const typingAccuracy = calculateTypingAccuracy(NWPM, GWPM)
+  const typingAccuracy = calculateTypingAccuracy(text.length, errors)
+  const GWPM = calculateGWPM(wordCount, typingTimeInMinutes)
+  const NWPM = calculateNWPM(GWPM, typingAccuracy)
 
   return {
     GWPM: GWPM,

@@ -1,8 +1,7 @@
 // NWPM (Net Words Per Minute)
 export function calculateNWPM(
   GWPM: number,
-  errorCount: number,
-  timeInSeconds: number,
+  accuracy: number,
 ) {
-  return Math.round(GWPM - (errorCount / (timeInSeconds / 60)))
+  return Math.round(GWPM * accuracy)
 }
