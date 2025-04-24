@@ -38,7 +38,6 @@ function TypingArea(
     fetch('http://localhost:8000/random-texts')
       .then((response) => response.json())
       .then((json) => {
-        console.log(json)
         if (
           Object.hasOwn(json, 'messageType') &&
           json.messageType === 'randomText'
