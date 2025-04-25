@@ -37,10 +37,6 @@ function ResultContainer() {
     setTypingAccuracy(typingAccuracy)
   }, [isDoneTyping, typingTime])
 
-  useEffect(() => {
-    console.log(isDoneTyping)
-  }, [isDoneTyping])
-
   return (
     <div
       id='result-container'
