@@ -10,8 +10,10 @@ type TypingStatsActions = {
   setTypingEndTime: (typingTime: number) => void
   increaseWrongKeyCount: () => void
   setCursorToMoved: () => void
-  finishTyping: () => void
+  startTypingGame: () => void
+  finishTypingGame: () => void
   setPlayerMode: (playerMode: Modes) => void
+  resetTypingStats: () => void
 }
 
 type TypingStatsState = {
@@ -23,20 +25,29 @@ type TypingStatsState = {
   actions: TypingStatsActions
 }
 
+const TypingStatsInitialState: Omit<
+  TypingStatsState,
+  'actions' | 'playerMode'
+> = {
+  cursorMoved: false,
+  isDoneTyping: false,
+  typingTime: 0,
+  wrongKeyCount: 0,
+}
+
 const useTypingStatsStore = create<TypingStatsState>()(
   (set) => ({
-    cursorMoved: false,
-    isDoneTyping: false,
-    typingTime: 0,
-    wrongKeyCount: 0,
+    ...TypingStatsInitialState,
     playerMode: Modes.Singleplayer,
     actions: {
       setCursorToMoved: () => set({ cursorMoved: true }),
-      finishTyping: () => set({ isDoneTyping: true }),
+      startTypingGame: () => set({ isDoneTyping: false }),
+      finishTypingGame: () => set({ isDoneTyping: true }),
       setTypingEndTime: (typingTime: number) => set({ typingTime: typingTime }),
       increaseWrongKeyCount: () =>
         set((state) => ({ wrongKeyCount: state.wrongKeyCount + 1 })),
       setPlayerMode: (playerMode: Modes) => set({ playerMode: playerMode }),
+      resetTypingStats: () => set(TypingStatsInitialState),
     },
   }),
 )

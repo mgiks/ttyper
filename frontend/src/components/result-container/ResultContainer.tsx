@@ -1,8 +1,10 @@
 import './ResultContainer.css'
-import { useText } from '../../stores/TextStore'
+import { useText, useTextRefreshCount } from '../../stores/TextStore'
 import { getTypingSpeedAndAccuracy } from './utils/getTypingAccuracyAndWPM'
+import { useEffect, useState } from 'react'
 import {
   useIsDoneTyping,
+  useTypingStatsActions,
   useTypingTime,
   useWrongKeyCount,
 } from '../../stores/TypingStatsStore'
@@ -12,16 +14,37 @@ function ResultContainer() {
   const isDoneTyping = useIsDoneTyping()
   const typingTime = useTypingTime()
   const errors = useWrongKeyCount()
-  const { GWPM, NWPM, typingAccuracy } = getTypingSpeedAndAccuracy(
-    text,
-    typingTime,
-    errors,
-  )
+  const textRefreshCount = useTextRefreshCount()
+
+  const { startTypingGame } = useTypingStatsActions()
+  useEffect(() => {
+    startTypingGame()
+  }, [textRefreshCount])
+
+  const [GWPM, setGWPM] = useState(0)
+  const [NWPM, setNWPM] = useState(0)
+  const [typingAccuracy, setTypingAccuracy] = useState(0)
+
+  useEffect(() => {
+    if (!isDoneTyping) return
+    const { GWPM, NWPM, typingAccuracy } = getTypingSpeedAndAccuracy(
+      text,
+      typingTime,
+      errors,
+    )
+    setGWPM(GWPM)
+    setNWPM(NWPM)
+    setTypingAccuracy(typingAccuracy)
+  }, [isDoneTyping, typingTime])
+
+  useEffect(() => {
+    console.log(isDoneTyping)
+  }, [isDoneTyping])
 
   return (
     <div
       id='result-container'
-      className={isDoneTyping ? 'visible' : undefined}
+      className={isDoneTyping ? 'visible' : 'invisible'}
     >
       GWPM: {GWPM}
       NWPM: {NWPM}

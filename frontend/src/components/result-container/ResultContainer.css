@@ -1,5 +1,4 @@
 #result-container {
-  display: none;
   background-color: white;
   position: absolute;
 }
@@ -8,4 +7,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#result-container.invisible {
+  display: none;
 }

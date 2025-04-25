@@ -4,25 +4,31 @@ import { trackTextForWrongKeys } from './utils/trackTextForWrongKeys'
 import { RandomTextMessage } from './dtos/message'
 import { toggleFocusOfTypingArea } from './utils/toggleFocusOfTypingArea'
 import { isControlKey } from './utils/isControlKey'
-import { useTextActions } from '../../stores/TextStore'
+import {
+  useCursorIndex,
+  useTextActions,
+  useTextRefreshCount,
+} from '../../stores/TextStore'
 import { useTypingStatsActions } from '../../stores/TypingStatsStore'
 
 let getWrongKeyIndex: (_: string) => number | undefined
 
 function TypingArea(
-  { typingContainerFocusCount, textRefreshCount }: {
+  { typingContainerFocusCount }: {
     typingContainerFocusCount: number
-    textRefreshCount: number
   },
 ) {
+  const textRefreshCount = useTextRefreshCount()
+  const cursorIndex = useCursorIndex()
   const {
     setTextBeforeCursor,
     setTextAfterCursor,
     setWrongTextStartIndex,
     setText,
+    setCursorIndex,
   } = useTextActions()
   const {
-    finishTyping,
+    finishTypingGame,
     increaseWrongKeyCount,
     setCursorToMoved,
   } = useTypingStatsActions()
@@ -51,24 +57,21 @@ function TypingArea(
       })
   }, [textRefreshCount])
 
-  const [currentCursorIndex, setCurrentCursorIndex] = useState(0)
   function setCursorPosition(key: string) {
-    const isKeyIsOutOfBounds = key === 'Backspace' && currentCursorIndex === 0
+    const isKeyIsOutOfBounds = key === 'Backspace' && cursorIndex === 0
     if (isKeyIsOutOfBounds) return
-    setCurrentCursorIndex((prevCursorIndex) =>
-      prevCursorIndex + (key === 'Backspace' ? -1 : 1)
-    )
+    setCursorIndex(key)
   }
   useEffect(() => {
-    currentCursorIndex > 0 && setCursorToMoved()
-  }, [currentCursorIndex])
+    cursorIndex > 0 && setCursorToMoved()
+  }, [cursorIndex])
 
-  const textBeforeCursor = textArray.slice(0, currentCursorIndex).join('')
-  const textAfterCursor = textArray.slice(currentCursorIndex).join('')
+  const textBeforeCursor = textArray.slice(0, cursorIndex).join('')
+  const textAfterCursor = textArray.slice(cursorIndex).join('')
   useEffect(() => {
     setTextAfterCursor(textAfterCursor)
     setTextBeforeCursor(textBeforeCursor)
-    if (textBeforeCursor && !textAfterCursor) finishTyping()
+    if (textBeforeCursor && !textAfterCursor) finishTypingGame()
   })
 
   function handleKeypress(

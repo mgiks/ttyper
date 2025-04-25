@@ -3,8 +3,13 @@ import TextArea from './TextArea'
 import TypingArea from './TypingArea'
 import { useEffect, useRef, useState } from 'react'
 import { useOutsideClickAndKeyPress } from '../../hooks/useOutsideClickAndKeypress'
+import { useTextActions } from '../../stores/TextStore'
+import { useTypingStatsActions } from '../../stores/TypingStatsStore'
 
 function TypingContainer() {
+  const { increaseTextRefreshCount, resetCursorIndex } = useTextActions()
+  const { resetTypingStats } = useTypingStatsActions()
+
   // Not a boolean to prevent unfocusing typing area
   // when clicking on typing container
   const [focusCount, setFocusCount] = useState(1)
@@ -23,7 +28,6 @@ function TypingContainer() {
     ref as React.RefObject<HTMLDivElement>,
   )
 
-  const [textRefreshCount, setTextRefreshCount] = useState(0)
   useEffect(() => {
     const removeTabDefaultFunctionality = (event: KeyboardEvent) => {
       event.key === 'Tab' && event.preventDefault()
@@ -33,21 +37,20 @@ function TypingContainer() {
       removeTabDefaultFunctionality,
     )
 
-    const increaseTextRefreshCount = (event: KeyboardEvent) => {
-      event.key === 'Tab' &&
-        setTextRefreshCount((prevTextRefreshCount) => prevTextRefreshCount + 1)
+    const handleTab = (event: KeyboardEvent) => {
+      if (event.key === 'Tab') {
+        increaseTextRefreshCount()
+        resetTypingStats()
+        resetCursorIndex()
+      }
     }
-    typingContainerRef.current?.addEventListener(
-      'keyup',
-      increaseTextRefreshCount,
-    )
+    const typingContainer = typingContainerRef.current
+    if (typingContainer) {
+      typingContainer.onkeyup = handleTab
+    }
 
     return () => {
       window.removeEventListener('keydown', removeTabDefaultFunctionality)
-      typingContainerRef.current?.removeEventListener(
-        'keyup',
-        increaseTextRefreshCount,
-      )
     }
   })
 
@@ -59,7 +62,6 @@ function TypingContainer() {
     >
       <TypingArea
         typingContainerFocusCount={focusCount}
-        textRefreshCount={textRefreshCount}
       />
       <TextArea
         typingContainerRef={typingContainerRef}
