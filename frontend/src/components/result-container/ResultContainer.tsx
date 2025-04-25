@@ -1,7 +1,7 @@
 import './ResultContainer.css'
 import { useText, useTextRefreshCount } from '../../stores/TextStore'
 import { getTypingSpeedAndAccuracy } from './utils/getTypingAccuracyAndWPM'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import {
   useIsDoneTyping,
   useTypingStatsActions,
@@ -21,21 +21,11 @@ function ResultContainer() {
     startTypingGame()
   }, [textRefreshCount])
 
-  const [GWPM, setGWPM] = useState(0)
-  const [NWPM, setNWPM] = useState(0)
-  const [typingAccuracy, setTypingAccuracy] = useState(0)
-
-  useEffect(() => {
-    if (!isDoneTyping) return
-    const { GWPM, NWPM, typingAccuracy } = getTypingSpeedAndAccuracy(
-      text,
-      typingTime,
-      errors,
-    )
-    setGWPM(GWPM)
-    setNWPM(NWPM)
-    setTypingAccuracy(typingAccuracy)
-  }, [isDoneTyping, typingTime])
+  const { GWPM, NWPM, typingAccuracy } = getTypingSpeedAndAccuracy(
+    text,
+    typingTime,
+    errors,
+  )
 
   return (
     <div
