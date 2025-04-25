@@ -8,6 +8,7 @@ import {
   useTextActions,
   useTextAfterCursor,
   useTextBeforeCursor,
+  useTextRefreshCount,
   useWrongTextStartIndex,
 } from '../../stores/TextStore'
 
@@ -17,6 +18,7 @@ function TextArea(
     typingContainerFocusCount: number
   },
 ) {
+  const textRefreshCount = useTextRefreshCount()
   const textBeforeCursor = useTextBeforeCursor()
   const textAfterCursor = useTextAfterCursor()
   const wrongTextStartIndex = useWrongTextStartIndex()
@@ -25,6 +27,14 @@ function TextArea(
   const textAreaRef = useRef<HTMLDivElement>(null)
   const cursorRef = useRef<HTMLSpanElement>(null)
   useEffect(() => keepCursorInView(cursorRef, textAreaRef))
+  useEffect(() => {
+    const textArea = textAreaRef.current
+    if (!textArea) return
+    textArea.style.animation = 'none'
+    // Causes a reflow to reset the animation
+    textArea.offsetHeight
+    textArea.style.animation = ''
+  }, [textRefreshCount])
 
   const [isCurrentlyTyping, setIsCurrentlyTyping] = useState(false)
   const timeoutRef = useRef<number>(null)

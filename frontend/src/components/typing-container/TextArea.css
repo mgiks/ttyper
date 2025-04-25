@@ -1,3 +1,12 @@
+@keyframes appearing-text {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 #text-area {
   margin: 15px;
   position: relative;
@@ -8,6 +17,7 @@
   line-height: 1.4;
   overflow-y: hidden;
   font-kerning: none;
+  animation: appearing-text 0.3s ease-out;
 }
 
 #wrong-text {
