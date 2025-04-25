@@ -40,7 +40,7 @@ function ResultContainer() {
   return (
     <div
       id='result-container'
-      className={isDoneTyping ? 'visible' : 'invisible'}
+      className={isDoneTyping ? undefined : 'invisible'}
     >
       GWPM: {GWPM}
       NWPM: {NWPM}

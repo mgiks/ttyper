@@ -1,12 +1,9 @@
 #result-container {
-  background-color: white;
-  position: absolute;
-}
-
-#result-container.visible {
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: white;
+  position: absolute;
 }
 
 #result-container.invisible {

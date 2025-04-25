@@ -1,3 +1,7 @@
 #typing-container-with-stats {
   height: fit-content;
 }
+
+#typing-container-with-stats.invisible {
+  display: none;
+}

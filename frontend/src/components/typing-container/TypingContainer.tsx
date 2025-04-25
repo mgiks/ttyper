@@ -1,15 +1,12 @@
 import './TypingContainer.css'
 import TextArea from './TextArea'
 import TypingArea from './TypingArea'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useOutsideClickAndKeyPress } from '../../hooks/useOutsideClickAndKeypress'
-import { useTextActions } from '../../stores/TextStore'
-import { useTypingStatsActions } from '../../stores/TypingStatsStore'
+import { useIsDoneTyping } from '../../stores/TypingStatsStore'
 
 function TypingContainer() {
-  const { increaseTextRefreshCount, resetCursorIndex } = useTextActions()
-  const { resetTypingStats } = useTypingStatsActions()
-
+  const isDoneTyping = useIsDoneTyping()
   // Not a boolean to prevent unfocusing typing area
   // when clicking on typing container
   const [focusCount, setFocusCount] = useState(1)
@@ -28,36 +25,11 @@ function TypingContainer() {
     ref as React.RefObject<HTMLDivElement>,
   )
 
-  useEffect(() => {
-    const removeTabDefaultFunctionality = (event: KeyboardEvent) => {
-      event.key === 'Tab' && event.preventDefault()
-    }
-    window.addEventListener(
-      'keydown',
-      removeTabDefaultFunctionality,
-    )
-
-    const handleTab = (event: KeyboardEvent) => {
-      if (event.key === 'Tab') {
-        increaseTextRefreshCount()
-        resetTypingStats()
-        resetCursorIndex()
-      }
-    }
-    const typingContainer = typingContainerRef.current
-    if (typingContainer) {
-      typingContainer.onkeyup = handleTab
-    }
-
-    return () => {
-      window.removeEventListener('keydown', removeTabDefaultFunctionality)
-    }
-  })
-
   return (
     <div
       ref={typingContainerRef}
       id='typing-container'
+      className={isDoneTyping ? 'invisible' : undefined}
       onClick={focusTypingContainer}
     >
       <TypingArea
