@@ -51,7 +51,7 @@ function TypingStatsContainer() {
   return (
     <div id='typing-stats-container'>
       <PlayerModeSwitcher />
-      <div id='stop-watch'>{secondsElapsed}</div>
+      <div id='stopwatch'>{secondsElapsed}</div>
       <div id='word-count'>
         {getActualWordCount(correctText) +
           (correctText.length === text.length ? 0 : -1)} /{' '}
