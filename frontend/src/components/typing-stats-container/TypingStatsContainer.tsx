@@ -5,6 +5,8 @@ import { useCorrectText, useText } from '../../stores/TextStore'
 import {
   useCursorMoved,
   useIsDoneTyping,
+  useIsStopWatchRunning,
+  useTimeElapsed,
   useTypingStatsActions,
 } from '../../stores/TypingStatsStore'
 import PlayerModeSwitcher from './PlayerModeSwitcher'
@@ -14,44 +16,45 @@ function TypingStatsContainer() {
   const isDoneTyping = useIsDoneTyping()
   const text = useText()
   const correctText = useCorrectText()
-  const { setTypingEndTime } = useTypingStatsActions()
+  const isStopwatchRunning = useIsStopWatchRunning()
+  const timeElapsed = useTimeElapsed()
+  const { setTypingTime, setTimeElapsed, startStopwatch, stopStopwatch } =
+    useTypingStatsActions()
   const [typingStartTime, setTypingStartTime] = useState(0)
-  const [secondsElapsed, setSecondsElapsed] = useState(0)
-  const [isStopWatchRunning, setIsStopWatchRunning] = useState(false)
 
-  function startStopWatch() {
-    setIsStopWatchRunning(true)
+  function handleCursorMoving() {
+    startStopwatch()
     setTypingStartTime(Date.now())
   }
 
-  function stopStopWatch() {
-    setIsStopWatchRunning(false)
-    setTypingEndTime(secondsElapsed)
+  function handleFinishingTyping() {
+    stopStopwatch()
+    setTypingTime(timeElapsed)
   }
 
   useEffect(() => {
-    cursorMoved && startStopWatch()
+    cursorMoved && handleCursorMoving()
   }, [cursorMoved])
 
   useEffect(() => {
-    isDoneTyping && stopStopWatch()
+    isDoneTyping && handleFinishingTyping()
   }, [isDoneTyping])
 
   const stopWarchRef = useRef<number>(undefined)
   useEffect(() => {
-    if (isStopWatchRunning) {
+    if (isStopwatchRunning) {
       stopWarchRef.current = setInterval(() => {
-        setSecondsElapsed(Math.round((Date.now() - typingStartTime) / 1000))
+        setTimeElapsed(Math.round((Date.now() - typingStartTime) / 1000))
       }, 1000)
     } else {
       clearTimeout(stopWarchRef.current)
     }
-  }, [isStopWatchRunning])
+  }, [isStopwatchRunning])
 
   return (
     <div id='typing-stats-container'>
       <PlayerModeSwitcher />
-      <div id='stopwatch'>{secondsElapsed}</div>
+      <div id='stopwatch'>{timeElapsed}</div>
       <div id='word-count'>
         {getActualWordCount(correctText) +
           (correctText.length === text.length ? 0 : -1)} /{' '}
