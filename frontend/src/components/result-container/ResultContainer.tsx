@@ -1,10 +1,5 @@
 import './ResultContainer.css'
-import {
-  useCorrectText,
-  useCursorIndex,
-  useText,
-  useTextRefreshCount,
-} from '../../stores/TextStore'
+import { useCursorIndex, useTextRefreshCount } from '../../stores/TextStore'
 import { getTypingSpeedAndAccuracy } from './utils/getTypingAccuracyAndWPM'
 import { useEffect } from 'react'
 import {
@@ -26,7 +21,11 @@ import {
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 import { secondsToArray } from './utils/secondsToArray'
-import { useResultActions, useResultsPerSecond } from '../../stores/ResultStore'
+import {
+  Result,
+  useResultActions,
+  useResultsPerSecond,
+} from '../../stores/ResultStore'
 
 ChartJS.register(
   LineController,
@@ -60,6 +59,18 @@ function ResultContainer() {
     errors,
   )
 
+  const result: Result = {
+    GWPM: GWPM,
+    NWPM: NWPM,
+    typingAccuracy: typingAccuracy,
+    time: typingTime + 1,
+    errors: errors,
+  }
+
+  // Needed to prevent contradiction of graph data and final result
+  const finalResults = [...results, result]
+  const finalTime = typingTime + 1
+
   return (
     <div
       id='result-container'
@@ -84,35 +95,31 @@ function ResultContainer() {
         </div>
       </div>
       <div id='chart'>
-        {results.length === typingTime &&
-          (
-            <Line
-              data={{
-                datasets: [{
-                  label: 'WPM',
-                  data: results.length === typingTime &&
-                    results.map((result) => result.GWPM),
-                  borderWidth: 1,
-                }],
-              }}
-              options={{
-                scales: {
-                  y: { beginAtZero: true },
-                  x: {
-                    labels: secondsToArray(typingTime),
-                  },
-                },
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                  tooltip: {
-                    enabled: true,
-                  },
-                },
-              }}
-            />
-          )}
+        <Line
+          data={{
+            datasets: [{
+              label: 'WPM',
+              data: finalResults.map((result) => result.GWPM),
+              borderWidth: 1,
+            }],
+          }}
+          options={{
+            scales: {
+              y: { beginAtZero: true },
+              x: {
+                labels: secondsToArray(finalTime),
+              },
+            },
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                enabled: true,
+              },
+            },
+          }}
+        />
       </div>
     </div>
   )

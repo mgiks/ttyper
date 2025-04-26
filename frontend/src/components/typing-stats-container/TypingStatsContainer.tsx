@@ -75,9 +75,10 @@ function TypingStatsContainer() {
         time: timeElapsed,
         errors: errors,
       }
+      console.log(result)
       addResult(result)
     }
-  }, [timeElapsed])
+  }, [timeElapsed, isDoneTyping])
 
   return (
     <div id='typing-stats-container'>
