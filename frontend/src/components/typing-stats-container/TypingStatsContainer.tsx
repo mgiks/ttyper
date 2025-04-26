@@ -75,7 +75,6 @@ function TypingStatsContainer() {
         time: timeElapsed,
         errors: errors,
       }
-      console.log(result)
       addResult(result)
     }
   }, [timeElapsed, isDoneTyping])
