@@ -12,7 +12,6 @@ import {
 import {
   CategoryScale,
   Chart as ChartJS,
-  Legend,
   LinearScale,
   LineController,
   LineElement,
@@ -34,7 +33,6 @@ ChartJS.register(
   LinearScale,
   CategoryScale,
   Tooltip,
-  Legend,
 )
 
 function ResultContainer() {
@@ -97,15 +95,30 @@ function ResultContainer() {
       <div id='chart'>
         <Line
           data={{
-            datasets: [{
-              label: 'WPM',
-              data: finalResults.map((result) => result.GWPM),
-              borderWidth: 1,
-            }],
+            datasets: [
+              {
+                label: 'WPM',
+                data: finalResults.map((result) => result.NWPM),
+              },
+              {
+                label: 'Raw WPM',
+                data: finalResults.map((result) => result.GWPM),
+                borderWidth: 1,
+              },
+              {
+                label: 'Accuracy',
+                data: finalResults.map((
+                  result,
+                ) => (result.typingAccuracy * 100)),
+              },
+            ],
           }}
           options={{
+            aspectRatio: 3,
             scales: {
-              y: { beginAtZero: true },
+              y: {
+                beginAtZero: true,
+              },
               x: {
                 labels: secondsToArray(finalTime),
               },
