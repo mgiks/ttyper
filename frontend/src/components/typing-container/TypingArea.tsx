@@ -30,6 +30,7 @@ function TypingArea(
   const {
     finishTypingGame,
     increaseWrongKeyCount,
+    increaseCorrectKeyCount,
     setCursorToMoved,
   } = useTypingStatsActions()
 
@@ -84,7 +85,7 @@ function TypingArea(
     const wrongKeyIndex = getWrongKeyIndex(key)
     if (wrongKeyIndex == undefined) return
     setWrongTextStartIndex(wrongKeyIndex)
-    wrongKeyIndex > -1 && increaseWrongKeyCount()
+    wrongKeyIndex > -1 ? increaseWrongKeyCount() : increaseCorrectKeyCount()
   }
 
   return (

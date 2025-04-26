@@ -10,6 +10,7 @@ type TypingStatsActions = {
   setTypingTime: (typingTime: number) => void
   setTimeElapsed: (timeElapsed: number) => void
   increaseWrongKeyCount: () => void
+  increaseCorrectKeyCount: () => void
   setCursorToMoved: () => void
   startTypingGame: () => void
   finishTypingGame: () => void
@@ -26,6 +27,7 @@ type TypingStatsState = {
   typingTime: number
   timeElapsed: number
   wrongKeyCount: number
+  correctKeyCount: number
   playerMode: Modes
   actions: TypingStatsActions
 }
@@ -40,6 +42,7 @@ const TypingStatsInitialState: Omit<
   typingTime: 0,
   timeElapsed: 0,
   wrongKeyCount: 0,
+  correctKeyCount: 0,
 }
 
 const useTypingStatsStore = create<TypingStatsState>()(
@@ -57,6 +60,8 @@ const useTypingStatsStore = create<TypingStatsState>()(
         set({ timeElapsed: timeElapsed }),
       increaseWrongKeyCount: () =>
         set((state) => ({ wrongKeyCount: state.wrongKeyCount + 1 })),
+      increaseCorrectKeyCount: () =>
+        set((state) => ({ correctKeyCount: state.correctKeyCount + 1 })),
       setPlayerMode: (playerMode: Modes) => set({ playerMode: playerMode }),
       resetTypingStats: () => set(TypingStatsInitialState),
     },
@@ -75,6 +80,8 @@ export const useTimeElapsed = () =>
   useTypingStatsStore((state) => state.timeElapsed)
 export const useWrongKeyCount = () =>
   useTypingStatsStore((state) => state.wrongKeyCount)
+export const useCorrectKeyCount = () =>
+  useTypingStatsStore((state) => state.correctKeyCount)
 export const usePlayerMode = () =>
   useTypingStatsStore((state) => state.playerMode)
 export const useTypingStatsActions = () =>

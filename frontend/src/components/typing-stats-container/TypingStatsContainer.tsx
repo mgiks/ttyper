@@ -1,23 +1,31 @@
 import { useEffect, useRef, useState } from 'react'
 import './TypingStatsContainer.css'
 import { getActualWordCount } from './utils/getActualWordCount'
-import { useCorrectText, useText } from '../../stores/TextStore'
+import { useCorrectText, useCursorIndex, useText } from '../../stores/TextStore'
 import {
+  useCorrectKeyCount,
   useCursorMoved,
   useIsDoneTyping,
   useIsStopWatchRunning,
   useTimeElapsed,
   useTypingStatsActions,
+  useWrongKeyCount,
 } from '../../stores/TypingStatsStore'
 import PlayerModeSwitcher from './PlayerModeSwitcher'
+import { Result, useResultActions } from '../../stores/ResultStore'
+import { getTypingSpeedAndAccuracy } from '../result-container/utils/getTypingAccuracyAndWPM'
 
 function TypingStatsContainer() {
   const cursorMoved = useCursorMoved()
   const isDoneTyping = useIsDoneTyping()
   const text = useText()
+  const errors = useWrongKeyCount()
   const correctText = useCorrectText()
+  const correctKeyPresses = useCorrectKeyCount()
   const isStopwatchRunning = useIsStopWatchRunning()
   const timeElapsed = useTimeElapsed()
+  const cursorIndex = useCursorIndex()
+  const { addResult } = useResultActions()
   const { setTypingTime, setTimeElapsed, startStopwatch, stopStopwatch } =
     useTypingStatsActions()
   const [typingStartTime, setTypingStartTime] = useState(0)
@@ -41,6 +49,7 @@ function TypingStatsContainer() {
   }, [isDoneTyping])
 
   const stopWarchRef = useRef<number>(undefined)
+
   useEffect(() => {
     if (isStopwatchRunning) {
       stopWarchRef.current = setInterval(() => {
@@ -50,6 +59,25 @@ function TypingStatsContainer() {
       clearTimeout(stopWarchRef.current)
     }
   }, [isStopwatchRunning])
+
+  useEffect(() => {
+    if (timeElapsed) {
+      const { GWPM, NWPM, typingAccuracy } = getTypingSpeedAndAccuracy(
+        cursorIndex,
+        timeElapsed,
+        correctKeyPresses,
+        errors,
+      )
+      const result: Result = {
+        GWPM: GWPM,
+        NWPM: NWPM,
+        typingAccuracy: typingAccuracy,
+        time: timeElapsed,
+        errors: errors,
+      }
+      addResult(result)
+    }
+  }, [timeElapsed])
 
   return (
     <div id='typing-stats-container'>
