@@ -1,0 +1,7 @@
+#chart {
+  width: 100%;
+  height: 100%;
+  grid-row: 1;
+  grid-column-start: 2;
+  grid-column-end: -1;
+}

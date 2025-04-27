@@ -10,30 +10,11 @@ import {
   useWrongKeyCount,
 } from '../../stores/TypingStatsStore'
 import {
-  CategoryScale,
-  Chart as ChartJS,
-  LinearScale,
-  LineController,
-  LineElement,
-  PointElement,
-  Tooltip,
-} from 'chart.js'
-import { Line } from 'react-chartjs-2'
-import { secondsToArray } from './utils/secondsToArray'
-import {
   Result,
   useResultActions,
   useResultsPerSecond,
 } from '../../stores/ResultStore'
-
-ChartJS.register(
-  LineController,
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  Tooltip,
-)
+import Chart from './Chart'
 
 function ResultContainer() {
   const isDoneTyping = useIsDoneTyping()
@@ -119,63 +100,7 @@ function ResultContainer() {
             </div>
           </div>
         </div>
-        <div id='chart'>
-          <Line
-            data={{
-              datasets: [
-                {
-                  label: 'WPM',
-                  data: finalResults.map((result) => result.NWPM),
-                },
-                {
-                  label: 'Raw WPM',
-                  data: finalResults.map((result) => result.GWPM),
-                  borderWidth: 1,
-                },
-                {
-                  label: 'Accuracy',
-                  data: finalResults.map((
-                    result,
-                  ) => (result.typingAccuracy * 100)),
-                  yAxisID: 'y1',
-                },
-              ],
-            }}
-            options={{
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  title: {
-                    color: 'black',
-                    text: 'Words Per Minute',
-                    align: 'center',
-                    display: true,
-                  },
-                  position: 'left',
-                  min: 1,
-                },
-                y1: {
-                  title: {
-                    color: 'black',
-                    text: 'Accuracy',
-                    align: 'center',
-                    display: true,
-                  },
-                  position: 'right',
-                  beginAtZero: true,
-                },
-                x: {
-                  labels: secondsToArray(finalTime),
-                },
-              },
-              plugins: {
-                tooltip: {
-                  enabled: true,
-                },
-              },
-            }}
-          />
-        </div>
+        <Chart finalResults={finalResults} finalTime={finalTime} />
       </div>
     </div>
   )
