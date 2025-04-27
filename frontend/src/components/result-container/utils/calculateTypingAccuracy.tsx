@@ -1,3 +1,7 @@
-export function calculateTypingAccuracy(NWPM: number, GWPM: number) {
-  return Math.round(NWPM / GWPM * 100)
+export function calculateTypingAccuracy(
+  correctKeyPresses: number,
+  errors: number,
+) {
+  const totalKepPresses = correctKeyPresses + errors
+  return parseFloat((correctKeyPresses / totalKepPresses).toFixed(2))
 }

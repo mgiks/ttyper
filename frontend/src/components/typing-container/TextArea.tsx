@@ -8,12 +8,17 @@ import {
   useTextActions,
   useTextAfterCursor,
   useTextBeforeCursor,
+  useTextRefreshCount,
   useWrongTextStartIndex,
 } from '../../stores/TextStore'
 
 function TextArea(
-  { typingContainerFocusCount }: { typingContainerFocusCount: number },
+  { typingContainerRef, typingContainerFocusCount }: {
+    typingContainerRef: React.RefObject<HTMLDivElement | null>
+    typingContainerFocusCount: number
+  },
 ) {
+  const textRefreshCount = useTextRefreshCount()
   const textBeforeCursor = useTextBeforeCursor()
   const textAfterCursor = useTextAfterCursor()
   const wrongTextStartIndex = useWrongTextStartIndex()
@@ -22,6 +27,14 @@ function TextArea(
   const textAreaRef = useRef<HTMLDivElement>(null)
   const cursorRef = useRef<HTMLSpanElement>(null)
   useEffect(() => keepCursorInView(cursorRef, textAreaRef))
+  useEffect(() => {
+    const textArea = textAreaRef.current
+    if (!textArea) return
+    textArea.style.animation = 'none'
+    // Causes a reflow to reset the animation
+    textArea.offsetHeight
+    textArea.style.animation = ''
+  }, [textRefreshCount])
 
   const [isCurrentlyTyping, setIsCurrentlyTyping] = useState(false)
   const timeoutRef = useRef<number>(null)
@@ -39,6 +52,23 @@ function TextArea(
   useEffect(() => {
     setCorrectText(correctText)
   })
+
+  useEffect(() => {
+    if (typingContainerRef.current && textAreaRef.current) {
+      const textArea = textAreaRef.current
+      const typingContainer = typingContainerRef.current
+      // It's easier to work with integer line height
+      const lineHeight = Math.round(
+        parseFloat(getComputedStyle(textArea).lineHeight),
+      )
+      textArea.style.lineHeight = lineHeight.toString() + 'px'
+      const topAndBottomMargin = 30
+      const numberOfLines = 5
+      const typingContainerHeight =
+        (lineHeight * numberOfLines + topAndBottomMargin).toString() + 'px'
+      typingContainer.style.height = typingContainerHeight
+    }
+  }, [typingContainerRef.current, textAreaRef.current])
 
   return (
     <>

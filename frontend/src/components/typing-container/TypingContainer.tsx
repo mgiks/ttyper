@@ -29,8 +29,13 @@ function TypingContainer() {
       id='typing-container'
       onClick={focusTypingContainer}
     >
-      <TypingArea typingContainerFocusCount={focusCount} />
-      <TextArea typingContainerFocusCount={focusCount} />
+      <TypingArea
+        typingContainerFocusCount={focusCount}
+      />
+      <TextArea
+        typingContainerRef={typingContainerRef}
+        typingContainerFocusCount={focusCount}
+      />
     </div>
   )
 }

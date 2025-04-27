@@ -8,20 +8,20 @@ type IsMessage interface {
 	SetMessageType()
 }
 
-type TextData struct {
+type RandomTextData struct {
 	Id        int    `json:"id"`
 	Text      string `json:"text"`
 	Submitter string `json:"submitter"`
 	Source    string `json:"source"`
 }
 
-type Text struct {
+type RandomTextMessage struct {
 	Message
-	Data TextData `json:"data"`
+	Data RandomTextData `json:"data"`
 }
 
-func (m *Text) SetMessageType() {
-	m.Message.MessageType = "text"
+func (m *RandomTextMessage) SetMessageType() {
+	m.MessageType = "randomText"
 }
 
 type KeyCheckData struct {
@@ -35,5 +35,5 @@ type KeyCheck struct {
 }
 
 func (m *KeyCheck) SetMessageType() {
-	m.Message.MessageType = "keyCheck"
+	m.MessageType = "keyCheck"
 }
