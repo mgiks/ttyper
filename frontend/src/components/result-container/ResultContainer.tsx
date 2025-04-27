@@ -31,6 +31,10 @@ function ResultContainer() {
     startTypingGame()
   }, [textRefreshCount])
 
+  if (!isDoneTyping) {
+    return null
+  }
+
   const { GWPM, NWPM, typingAccuracy } = getTypingSpeedAndAccuracy(
     cursorIndex,
     typingTime,
