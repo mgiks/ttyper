@@ -13,8 +13,9 @@
   padding: 0px;
 }
 
-.player-mode-icons {
-  height: 1.3em;
+.player-mode-icon {
+  height: 1rem;
+  width: 1rem;
 }
 
 #player-mode-dropdown.visible {

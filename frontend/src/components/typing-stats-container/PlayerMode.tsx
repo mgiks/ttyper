@@ -16,7 +16,7 @@ function PlayerMode(
           setIsSwitcherVisible((visibilityValue) => !visibilityValue))}
       >
         <img
-          className='player-mode-icons'
+          className='player-mode-icon'
           src={playerModeToIcon.get(playerMode)}
         />{' '}
         {playerMode}
