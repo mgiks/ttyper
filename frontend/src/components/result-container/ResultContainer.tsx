@@ -74,65 +74,108 @@ function ResultContainer() {
       id='result-container'
       className={isDoneTyping ? undefined : 'invisible'}
     >
-      <div id='result-stats-container'>
-        <div className='result-stats'>
-          <label>GWPM:</label>
-          {GWPM}
+      <div id='result-wrapper'>
+        <div id='stats'>
+          <div id='wpm' className='result-stat'>
+            <div className='stat-label'>
+              wpm
+            </div>
+            <div className='stat-value'>
+              {NWPM}
+            </div>
+          </div>
+          <div id='accuracy' className='result-stat'>
+            <div className='stat-label'>
+              accuracy
+            </div>
+            <div className='stat-value'>
+              {typingAccuracy * 100}%
+            </div>
+          </div>
         </div>
-        <div className='result-stats'>
-          NWPM: {NWPM}
+        <div id='additional-stats'>
+          <div id='raw-wpm' className='result-stat'>
+            <div className='small-stat-label'>
+              raw wpm
+            </div>
+            <div className='small-stat-value'>
+              {GWPM}
+            </div>
+          </div>
+          <div id='time' className='result-stat'>
+            <div className='small-stat-label'>
+              time
+            </div>
+            <div className='small-stat-value'>
+              {typingTime}s
+            </div>
+          </div>
+          <div id='errors' className='result-stat'>
+            <div className='small-stat-label'>
+              errors
+            </div>
+            <div className='small-stat-value'>
+              {errors}
+            </div>
+          </div>
         </div>
-        <div className='result-stats'>
-          Typing accuracy: {typingAccuracy * 100}%
+        <div id='chart'>
+          <Line
+            data={{
+              datasets: [
+                {
+                  label: 'WPM',
+                  data: finalResults.map((result) => result.NWPM),
+                },
+                {
+                  label: 'Raw WPM',
+                  data: finalResults.map((result) => result.GWPM),
+                  borderWidth: 1,
+                },
+                {
+                  label: 'Accuracy',
+                  data: finalResults.map((
+                    result,
+                  ) => (result.typingAccuracy * 100)),
+                  yAxisID: 'y1',
+                },
+              ],
+            }}
+            options={{
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  title: {
+                    color: 'black',
+                    text: 'Words Per Minute',
+                    align: 'center',
+                    display: true,
+                  },
+                  position: 'left',
+                  min: 1,
+                },
+                y1: {
+                  title: {
+                    color: 'black',
+                    text: 'Accuracy',
+                    align: 'center',
+                    display: true,
+                  },
+                  position: 'right',
+                  beginAtZero: true,
+                },
+                x: {
+                  labels: secondsToArray(finalTime),
+                },
+              },
+              plugins: {
+                tooltip: {
+                  enabled: true,
+                },
+              },
+            }}
+          />
         </div>
-        <div className='result-stats'>
-          Time: {typingTime}
-        </div>
-        <div className='result-stats'>
-          Errors: {errors}
-        </div>
-      </div>
-      <div id='chart'>
-        <Line
-          data={{
-            datasets: [
-              {
-                label: 'WPM',
-                data: finalResults.map((result) => result.NWPM),
-              },
-              {
-                label: 'Raw WPM',
-                data: finalResults.map((result) => result.GWPM),
-                borderWidth: 1,
-              },
-              {
-                label: 'Accuracy',
-                data: finalResults.map((
-                  result,
-                ) => (result.typingAccuracy * 100)),
-              },
-            ],
-          }}
-          options={{
-            aspectRatio: 3,
-            scales: {
-              y: {
-                beginAtZero: true,
-              },
-              x: {
-                labels: secondsToArray(finalTime),
-              },
-            },
-            plugins: {
-              legend: {
-                display: false,
-              },
-              tooltip: {
-                enabled: true,
-              },
-            },
-          }}
-        />
       </div>
     </div>
   )
