@@ -9,7 +9,10 @@ import {
   useTextActions,
   useTextRefreshCount,
 } from '../../stores/TextStore'
-import { useTypingStatsActions } from '../../stores/TypingStatsStore'
+import {
+  useIsDoneTyping,
+  useTypingStatsActions,
+} from '../../stores/TypingStatsStore'
 
 let getWrongKeyIndex: (_: string) => number | undefined
 
@@ -19,6 +22,7 @@ function TypingArea(
   },
 ) {
   const textRefreshCount = useTextRefreshCount()
+  const isDoneTyping = useIsDoneTyping()
   const cursorIndex = useCursorIndex()
   const {
     setTextBeforeCursor,
@@ -37,7 +41,7 @@ function TypingArea(
   const typingAreaRef = useRef<HTMLTextAreaElement>(null)
   useEffect(
     () => toggleFocusOfTypingArea(typingContainerFocusCount, typingAreaRef),
-    [typingContainerFocusCount],
+    [typingContainerFocusCount, isDoneTyping],
   )
 
   const [textArray, setTextArray] = useState([''])
