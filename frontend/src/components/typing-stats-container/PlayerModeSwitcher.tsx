@@ -4,12 +4,12 @@ import multiplayerIcon from './icons/multiplayer-icon.svg'
 import privateRoomIcon from './icons/private-room-icon.svg'
 import './PlayerModeSwitcher.css'
 import { useState } from 'react'
-import { Modes, usePlayerMode } from '../../stores/TypingStatsStore'
+import { PlayerModes, usePlayerMode } from '../../stores/TypingStatsStore'
 
-export const playerModeToIcon: Map<Modes, string> = new Map([
-  [Modes.Singleplayer, singleplayerIcon],
-  [Modes.Multiplayer, multiplayerIcon],
-  [Modes.PrivateRoom, privateRoomIcon],
+export const playerModeToIcon: Map<PlayerModes, string> = new Map([
+  [PlayerModes.Singleplayer, singleplayerIcon],
+  [PlayerModes.Multiplayer, multiplayerIcon],
+  [PlayerModes.PrivateRoom, privateRoomIcon],
 ])
 
 function PlayerModeSwitcher() {
@@ -34,15 +34,15 @@ function PlayerModeSwitcher() {
       >
         <ul>
           <PlayerMode
-            playerMode={Modes.Multiplayer}
+            playerMode={PlayerModes.Multiplayer}
             setIsSwitcherVisible={setIsSwitcherVisible}
           />
           <PlayerMode
-            playerMode={Modes.Singleplayer}
+            playerMode={PlayerModes.Singleplayer}
             setIsSwitcherVisible={setIsSwitcherVisible}
           />
           <PlayerMode
-            playerMode={Modes.PrivateRoom}
+            playerMode={PlayerModes.PrivateRoom}
             setIsSwitcherVisible={setIsSwitcherVisible}
           />
         </ul>

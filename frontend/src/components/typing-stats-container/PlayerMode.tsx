@@ -1,9 +1,12 @@
-import { Modes, useTypingStatsActions } from '../../stores/TypingStatsStore'
+import {
+  PlayerModes,
+  useTypingStatsActions,
+} from '../../stores/TypingStatsStore'
 import { playerModeToIcon } from './PlayerModeSwitcher'
 
 function PlayerMode(
   { playerMode, setIsSwitcherVisible }: {
-    playerMode: Modes
+    playerMode: PlayerModes
     setIsSwitcherVisible: React.Dispatch<React.SetStateAction<boolean>>
   },
 ) {

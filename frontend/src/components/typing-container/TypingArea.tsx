@@ -62,11 +62,6 @@ function TypingArea(
       })
   }, [textRefreshCount])
 
-  function setCursorPosition(key: string) {
-    const isKeyIsOutOfBounds = key === 'Backspace' && cursorIndex === 0
-    if (isKeyIsOutOfBounds) return
-    setCursorIndex(key)
-  }
   useEffect(() => {
     cursorIndex > 0 && setCursorToMoved()
   }, [cursorIndex])
@@ -79,15 +74,19 @@ function TypingArea(
     if (textBeforeCursor && !textAfterCursor) finishTypingGame()
   })
 
+  function setCursorPosition(key: string) {
+    const isKeyIsOutOfBounds = key === 'Backspace' && cursorIndex === 0
+    if (isKeyIsOutOfBounds) return
+    setCursorIndex(key)
+  }
   function handleKeypress(
     event: React.KeyboardEvent<HTMLTextAreaElement>,
   ) {
     const key = event.key
     if (isControlKey(key)) return
     setCursorPosition(key)
-
     const wrongKeyIndex = getWrongKeyIndex(key)
-    if (wrongKeyIndex == undefined) return
+    if (wrongKeyIndex === undefined) return
     setWrongTextStartIndex(wrongKeyIndex)
     wrongKeyIndex > -1 ? increaseWrongKeyCount() : increaseCorrectKeyCount()
   }
