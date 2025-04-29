@@ -37,3 +37,7 @@ type KeyCheck struct {
 func (m *KeyCheck) SetMessageType() {
 	m.MessageType = "keyCheck"
 }
+
+type GameFound struct {
+	IsGameFound bool `json:"isGameFound"`
+}

@@ -10,9 +10,13 @@ import {
   useTextRefreshCount,
 } from '../../stores/TextStore'
 import {
+  PlayerModes,
   useIsDoneTyping,
+  usePlayerMode,
   useTypingStatsActions,
 } from '../../stores/TypingStatsStore'
+import { connectWebSocket } from './utils/connectWebSocket'
+import { useIsSearchingForPlayers } from '../../stores/MultiplayerStore'
 
 let getWrongKeyIndex: (_: string) => number | undefined
 
@@ -24,6 +28,8 @@ function TypingArea(
   const textRefreshCount = useTextRefreshCount()
   const isDoneTyping = useIsDoneTyping()
   const cursorIndex = useCursorIndex()
+  const playerMode = usePlayerMode()
+  const isSeachingForPlayers = useIsSearchingForPlayers()
   const {
     setTextBeforeCursor,
     setTextAfterCursor,
@@ -61,6 +67,24 @@ function TypingArea(
         }
       })
   }, [textRefreshCount])
+
+  useEffect(() => {
+    if (playerMode === PlayerModes.Multiplayer && isSeachingForPlayers) {
+      connectWebSocket((e: MessageEvent) => {
+        const message = e.data
+        if (
+          Object.hasOwn(message, 'messageType') &&
+          message.messageType === 'randomText'
+        ) {
+          const randomTextMessage = message as RandomTextMessage
+          const text = randomTextMessage.data.text
+          setTextArray(text.split(''))
+          getWrongKeyIndex = trackTextForWrongKeys(text)
+          setText(text)
+        }
+      })
+    }
+  }, [playerMode, isSeachingForPlayers])
 
   useEffect(() => {
     cursorIndex > 0 && setCursorToMoved()
