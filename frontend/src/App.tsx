@@ -3,14 +3,19 @@ import TypingContainer from './components/typing-container/TypingContainer'
 import TypingStatsContainer from './components/typing-stats-container/TypingStatsContainer'
 import './App.css'
 import {
+  PlayerModes,
   useIsDoneTyping,
+  usePlayerMode,
   useTypingStatsActions,
 } from './stores/TypingStatsStore'
 import { useEffect } from 'react'
 import { useTextActions } from './stores/TextStore'
+import { useMultiplayerActions } from './stores/MultiplayerStore'
 
 function App() {
   const isDoneTyping = useIsDoneTyping()
+  const playerMode = usePlayerMode()
+  const { searchForPlayers, stopSearhingForPlayers } = useMultiplayerActions()
   const { increaseTextRefreshCount, resetCursorIndex } = useTextActions()
   const { resetTypingStats } = useTypingStatsActions()
   useEffect(() => {
@@ -20,14 +25,20 @@ function App() {
     window.onkeydown = removeTabDefaultFunctionality
 
     const handleTab = (event: KeyboardEvent) => {
-      if (event.key === 'Tab') {
+      if (event.key !== 'Tab') {
+        return
+      }
+      if (playerMode === PlayerModes.Singleplayer) {
         increaseTextRefreshCount()
         resetTypingStats()
         resetCursorIndex()
+        stopSearhingForPlayers()
+      } else if (playerMode === PlayerModes.Multiplayer) {
+        searchForPlayers()
       }
     }
     window.onkeyup = handleTab
-  })
+  }, [playerMode])
   return (
     <>
       <div

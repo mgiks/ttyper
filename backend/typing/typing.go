@@ -18,7 +18,7 @@ type typingServer struct {
 
 func NewTypingServer() *typingServer {
 	ts := &typingServer{}
-	ts.mux.HandleFunc("/games", ts.searchGameHandler)
+	ts.mux.HandleFunc("/", ts.searchGameHandler)
 	ts.mux.HandleFunc("GET /random-texts", ts.getRandomTextHandler)
 	return ts
 }
