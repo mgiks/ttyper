@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './TypingArea.css'
 import { trackTextForWrongKeys } from './utils/trackTextForWrongKeys'
-import { RandomTextMessage } from './dtos/message'
+import { Message, PlayerInfoMessage, RandomTextMessage } from './dtos/message'
 import { toggleFocusOfTypingArea } from './utils/toggleFocusOfTypingArea'
 import { isControlKey } from './utils/isControlKey'
 import {
@@ -10,13 +10,10 @@ import {
   useTextRefreshCount,
 } from '../../stores/TextStore'
 import {
-  PlayerModes,
   useIsDoneTyping,
-  usePlayerMode,
   useTypingStatsActions,
 } from '../../stores/TypingStatsStore'
-import { connectWebSocket } from './utils/connectWebSocket'
-import { useIsSearchingForPlayers } from '../../stores/MultiplayerStore'
+import { useIsSearchingForMatch } from '../../stores/MultiplayerStore'
 
 let getWrongKeyIndex: (_: string) => number | undefined
 
@@ -28,8 +25,7 @@ function TypingArea(
   const textRefreshCount = useTextRefreshCount()
   const isDoneTyping = useIsDoneTyping()
   const cursorIndex = useCursorIndex()
-  const playerMode = usePlayerMode()
-  const isSeachingForPlayers = useIsSearchingForPlayers()
+  const isSearchingForMatch = useIsSearchingForMatch()
   const {
     setTextBeforeCursor,
     setTextAfterCursor,
@@ -69,22 +65,39 @@ function TypingArea(
   }, [textRefreshCount])
 
   useEffect(() => {
-    if (playerMode === PlayerModes.Multiplayer && isSeachingForPlayers) {
-      connectWebSocket((e: MessageEvent) => {
-        const message = e.data
-        if (
-          Object.hasOwn(message, 'messageType') &&
-          message.messageType === 'randomText'
-        ) {
-          const randomTextMessage = message as RandomTextMessage
-          const text = randomTextMessage.data.text
-          setTextArray(text.split(''))
-          getWrongKeyIndex = trackTextForWrongKeys(text)
-          setText(text)
-        }
-      })
+    if (!isSearchingForMatch) {
+      return
     }
-  }, [playerMode, isSeachingForPlayers])
+    const ws = new WebSocket('ws://localhost:8000')
+    ws.onopen = () => {
+      console.log('Connected to websocket server')
+      const playerInfo: PlayerInfoMessage = {
+        type: 'playerInfo',
+        data: {
+          nickname: 'mgik',
+          playerId: 123,
+        },
+      }
+      const jsonPlayerInfo = JSON.stringify(playerInfo)
+      ws.send(jsonPlayerInfo)
+    }
+    ws.onmessage = (event) => {
+      const data: Message = JSON.parse(event.data)
+      switch (data.type) {
+        case 'matchFound':
+          break
+        case 'gameUpdate':
+          break
+      }
+    }
+    ws.onclose = () => {
+      console.log('Closed websocket connection')
+    }
+
+    return () => {
+      ws.close()
+    }
+  }, [isSearchingForMatch])
 
   useEffect(() => {
     cursorIndex > 0 && setCursorToMoved()

@@ -28,17 +28,21 @@ function App() {
       if (event.key !== 'Tab') {
         return
       }
-      if (playerMode === PlayerModes.Singleplayer) {
-        increaseTextRefreshCount()
-        resetTypingStats()
-        resetCursorIndex()
-        stopSearhingForPlayers()
-      } else if (playerMode === PlayerModes.Multiplayer) {
-        searchForPlayers()
+      switch (playerMode) {
+        case PlayerModes.Singleplayer:
+          increaseTextRefreshCount()
+          resetTypingStats()
+          resetCursorIndex()
+          stopSearhingForPlayers()
+          break
+        case PlayerModes.Multiplayer:
+          searchForPlayers()
+          break
       }
     }
     window.onkeyup = handleTab
   }, [playerMode])
+
   return (
     <>
       <div

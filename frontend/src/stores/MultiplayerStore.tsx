@@ -6,23 +6,23 @@ type MultiplayerActions = {
 }
 
 type MultiplayerState = {
-  isSearchingForPlayers: boolean
+  isSearchingForMatch: boolean
   actions: MultiplayerActions
 }
 
 const useMultiplayerStore = create<MultiplayerState>()((set) => ({
-  isSearchingForPlayers: false,
+  isSearchingForMatch: false,
   actions: {
     searchForPlayers: () => {
-      set({ isSearchingForPlayers: true })
+      set({ isSearchingForMatch: true })
     },
     stopSearhingForPlayers: () => {
-      set({ isSearchingForPlayers: false })
+      set({ isSearchingForMatch: false })
     },
   },
 }))
 
-export const useIsSearchingForPlayers = () =>
-  useMultiplayerStore((state) => state.isSearchingForPlayers)
+export const useIsSearchingForMatch = () =>
+  useMultiplayerStore((state) => state.isSearchingForMatch)
 export const useMultiplayerActions = () =>
   useMultiplayerStore((state) => state.actions)

@@ -3,6 +3,7 @@ package typing
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -18,14 +19,14 @@ type typingServer struct {
 
 func NewTypingServer() *typingServer {
 	ts := &typingServer{}
-	ts.mux.HandleFunc("/", ts.searchGameHandler)
+	ts.mux.HandleFunc("/", ts.matchHandler)
 	ts.mux.HandleFunc("GET /random-texts", ts.getRandomTextHandler)
 	return ts
 }
 
 func (ts *typingServer) getRandomTextHandler(w http.ResponseWriter, r *http.Request) {
 	utils.EnableCors(&w)
-	rtm := createRandomTextMessage()
+	rtm := buildRandomTextMessage()
 	jsonRtm, err := json.Marshal(rtm)
 	if err != nil {
 		log.Printf("Failed to marshal text to json: %v\n", err)
@@ -36,13 +37,19 @@ func (ts *typingServer) getRandomTextHandler(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-type searchingPlayer struct {
-	Id int `json:"id"`
+type data struct {
+	Nickname string `json:"nickname"`
+	PlayerId int    `json:"playerId"`
 }
 
-var searchingPlayers = make([]searchingPlayer, 255)
+type searchingPlayer struct {
+	Type string `json:"type"`
+	Data data   `json:"data"`
+}
 
-func (ts *typingServer) searchGameHandler(w http.ResponseWriter, r *http.Request) {
+var searchingPlayers = make([]searchingPlayer, 0)
+
+func (ts *typingServer) matchHandler(w http.ResponseWriter, r *http.Request) {
 	var acceptOptions = &websocket.AcceptOptions{
 		OriginPatterns: []string{"localhost:5173"},
 	}
@@ -58,26 +65,34 @@ func (ts *typingServer) searchGameHandler(w http.ResponseWriter, r *http.Request
 	for {
 		foundPlayers := <-c
 		if foundPlayers {
-			gf := dtos.GameFound{IsGameFound: true}
-			jsonGf, err := json.Marshal(gf)
+			mf := buildMatchFoundMessage()
+			jsonGf, err := json.Marshal(mf)
 			if err != nil {
 				log.Printf("Failed to marshal game found json: %v\n", err)
 			}
+
 			err = wsc.Write(ctx, websocket.MessageText, jsonGf)
 			if err != nil {
 				log.Printf("Failed to send game found response: %v\n", err)
+			}
+
+			err = wsc.Close(websocket.StatusNormalClosure, "Game found")
+			if err != nil {
+				log.Printf("Failed to close websocket connection: %v\n", err)
 			}
 		} else {
 			msgType, msg, err := wsc.Read(ctx)
 			if err != nil {
 				log.Printf("Failed to receive searching player data: %v\n", err)
 			}
+
 			if msgType == websocket.MessageText {
 				var sp searchingPlayer
 				err := json.Unmarshal(msg, &sp)
 				if err != nil {
 					log.Printf("Failed to unmarshal searching player message: %v\n", err)
 				}
+				fmt.Printf("%+v\n", sp)
 				searchingPlayers = append(searchingPlayers, sp)
 			}
 		}
@@ -112,6 +127,7 @@ func (ts *typingServer) searchGameHandler(w http.ResponseWriter, r *http.Request
 //			}
 //		}
 //	}
+
 func (ts *typingServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ts.mux.ServeHTTP(w, r)
 }
@@ -120,23 +136,40 @@ func searchForPlayers(c chan bool) {
 	for {
 		if len(searchingPlayers) > 1 {
 			c <- true
-			return
+		} else {
+			c <- false
 		}
 	}
 }
 
-func createRandomTextMessage() *dtos.RandomTextMessage {
+func buildRandomTextMessage() *dtos.RandomTextMessage {
 	db := server.GetServerConfig().Db
 
-	rtm := &dtos.RandomTextMessage{}
-	rtm.SetMessageType()
+	rtm := dtos.NewRandomTextMessage()
 
-	row := db.GetRandomText()
-	rtmData := &rtm.Data
-	err := row.Scan(&rtmData.Id, &rtmData.Text, &rtmData.Submitter, &rtmData.Source)
+	row := db.GetRandomTextRow()
+	err := row.Scan(
+		&rtm.Data.Id,
+		&rtm.Data.Text,
+		&rtm.Data.Submitter,
+		&rtm.Data.Source,
+	)
 	if err != nil {
-		log.Printf("Failed to get text: %v\n", err)
+		log.Printf("Failed to get random text row: %v\n", err)
+		return nil
 	}
 
 	return rtm
+}
+
+func buildMatchFoundMessage() *dtos.MatchFoundMessage {
+	db := server.GetServerConfig().Db
+
+	mfm := dtos.NewMatchFoundMessage()
+
+	row := db.GetRandomText()
+	mfm.Data.Text = row
+	mfm.Data.Players = []string{"mgik", "somebody"}
+
+	return mfm
 }
