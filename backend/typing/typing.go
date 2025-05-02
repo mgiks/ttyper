@@ -73,17 +73,12 @@ func (ts *typingServer) matchHandler(w http.ResponseWriter, r *http.Request) {
 
 			err = wsc.Write(ctx, websocket.MessageText, jsonGf)
 			if err != nil {
-				log.Printf("Failed to send game found response: %v\n", err)
-			}
-
-			err = wsc.Close(websocket.StatusNormalClosure, "Game found")
-			if err != nil {
-				log.Printf("Failed to close websocket connection: %v\n", err)
+				wsc.CloseNow()
 			}
 		} else {
 			msgType, msg, err := wsc.Read(ctx)
 			if err != nil {
-				log.Printf("Failed to receive searching player data: %v\n", err)
+				wsc.CloseNow()
 			}
 
 			if msgType == websocket.MessageText {
