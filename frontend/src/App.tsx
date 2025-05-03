@@ -11,6 +11,7 @@ import {
 import { useEffect } from 'react'
 import { useTextActions } from './stores/TextStore'
 import { useMultiplayerActions } from './stores/MultiplayerStore'
+import HeaderContainer from './components/header-container/HeaderContainer'
 
 function App() {
   const isDoneTyping = useIsDoneTyping()
@@ -18,6 +19,7 @@ function App() {
   const { searchForPlayers, stopSearhingForPlayers } = useMultiplayerActions()
   const { increaseTextRefreshCount, resetCursorIndex } = useTextActions()
   const { resetTypingStats } = useTypingStatsActions()
+  const { setRandomName } = useMultiplayerActions()
   useEffect(() => {
     const removeTabDefaultFunctionality = (event: KeyboardEvent) => {
       event.key === 'Tab' && event.preventDefault()
@@ -43,8 +45,13 @@ function App() {
     window.onkeyup = handleTab
   }, [playerMode])
 
+  useEffect(() => {
+    setRandomName()
+  }, [])
+
   return (
     <>
+      <HeaderContainer />
       <div
         id='typing-container-with-stats'
         className={isDoneTyping ? 'invisible' : undefined}

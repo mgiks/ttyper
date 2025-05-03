@@ -22,7 +22,9 @@ function PlayerModeSwitcher() {
 
   return (
     <div>
-      <button onClick={() => toggleSwitcherVisibility()}>
+      <button
+        onClick={() => toggleSwitcherVisibility()}
+      >
         <img
           className='player-mode-icon'
           src={playerModeToIcon.get(playerMode)}
