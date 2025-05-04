@@ -15,6 +15,7 @@ import {
 } from '../../stores/TypingStatsStore'
 import {
   useIsSearchingForMatch,
+  useMultiplayerActions,
   useName,
   usePlayerId,
 } from '../../stores/MultiplayerStore'
@@ -45,6 +46,7 @@ function TypingArea(
     increaseCorrectKeyCount,
     setCursorToMoved,
   } = useTypingStatsActions()
+  const { stopSearchingForMatch } = useMultiplayerActions()
 
   const typingAreaRef = useRef<HTMLTextAreaElement>(null)
   useEffect(
@@ -96,6 +98,7 @@ function TypingArea(
     }
     ws.onclose = () => {
       console.log('Closed websocket connection')
+      stopSearchingForMatch()
     }
 
     return () => {
