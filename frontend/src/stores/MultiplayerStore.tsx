@@ -12,8 +12,8 @@ function generateRandomPlayerId() {
 type MultiplayerActions = {
   setRandomName: () => void
   setRandomPlayerId: () => void
-  searchForPlayers: () => void
-  stopSearhingForPlayers: () => void
+  searchForMatch: () => void
+  stopSearchingForMatch: () => void
 }
 
 type MultiplayerState = {
@@ -34,10 +34,10 @@ const useMultiplayerStore = create<MultiplayerState>()((set) => ({
     setRandomPlayerId: () => {
       set({ playerId: generateRandomPlayerId() })
     },
-    searchForPlayers: () => {
+    searchForMatch: () => {
       set({ isSearchingForMatch: true })
     },
-    stopSearhingForPlayers: () => {
+    stopSearchingForMatch: () => {
       set({ isSearchingForMatch: false })
     },
   },

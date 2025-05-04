@@ -16,7 +16,7 @@ import HeaderContainer from './components/header-container/HeaderContainer'
 function App() {
   const isDoneTyping = useIsDoneTyping()
   const playerMode = usePlayerMode()
-  const { searchForPlayers, stopSearhingForPlayers } = useMultiplayerActions()
+  const { searchForMatch, stopSearchingForMatch } = useMultiplayerActions()
   const { increaseTextRefreshCount, resetCursorIndex } = useTextActions()
   const { resetTypingStats } = useTypingStatsActions()
   const { setRandomName, setRandomPlayerId } = useMultiplayerActions()
@@ -35,10 +35,10 @@ function App() {
           increaseTextRefreshCount()
           resetTypingStats()
           resetCursorIndex()
-          stopSearhingForPlayers()
+          stopSearchingForMatch()
           break
         case PlayerModes.Multiplayer:
-          searchForPlayers()
+          searchForMatch()
           break
       }
     }
