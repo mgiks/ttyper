@@ -1,14 +1,10 @@
 package dtos
 
 type Message struct {
-	MessageType string `json:"messageType"`
+	Type string `json:"type"`
 }
 
-type IsMessage interface {
-	SetMessageType()
-}
-
-type RandomTextData struct {
+type randomTextData struct {
 	Id        int    `json:"id"`
 	Text      string `json:"text"`
 	Submitter string `json:"submitter"`
@@ -17,23 +13,45 @@ type RandomTextData struct {
 
 type RandomTextMessage struct {
 	Message
-	Data RandomTextData `json:"data"`
+	Data randomTextData `json:"data"`
 }
 
-func (m *RandomTextMessage) SetMessageType() {
-	m.MessageType = "randomText"
+func (m *RandomTextMessage) setMessageType() {
+	m.Type = "randomText"
 }
 
-type KeyCheckData struct {
-	PressedKey string `json:"pressedKey"`
-	IsRight    bool   `json:"isRight"`
+func NewRandomTextMessage() *RandomTextMessage {
+	m := RandomTextMessage{}
+	m.setMessageType()
+	return &m
 }
 
-type KeyCheck struct {
+type matchFoundData struct {
+	Text    string   `json:"text"`
+	Players []string `json:"players"`
+}
+
+type MatchFoundMessage struct {
 	Message
-	Data KeyCheckData `json:"data"`
+	Data matchFoundData `json:"data"`
 }
 
-func (m *KeyCheck) SetMessageType() {
-	m.MessageType = "keyCheck"
+func (m *MatchFoundMessage) setMessageType() {
+	m.Type = "matchFound"
+}
+
+func NewMatchFoundMessage() *MatchFoundMessage {
+	m := MatchFoundMessage{}
+	m.setMessageType()
+	return &m
+}
+
+type searchingPlayerData struct {
+	Name     string `json:"name"`
+	PlayerId string `json:"playerId"`
+}
+
+type SearchingPlayerMessage struct {
+	Message
+	Data searchingPlayerData `json:"data"`
 }

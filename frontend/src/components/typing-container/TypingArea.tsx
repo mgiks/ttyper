@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './TypingArea.css'
 import { trackTextForWrongKeys } from './utils/trackTextForWrongKeys'
-import { RandomTextMessage } from './dtos/message'
+import { Message, PlayerInfoMessage, RandomTextMessage } from './dtos/message'
 import { toggleFocusOfTypingArea } from './utils/toggleFocusOfTypingArea'
 import { isControlKey } from './utils/isControlKey'
 import {
@@ -13,6 +13,11 @@ import {
   useIsDoneTyping,
   useTypingStatsActions,
 } from '../../stores/TypingStatsStore'
+import {
+  useIsSearchingForMatch,
+  useName,
+  usePlayerId,
+} from '../../stores/MultiplayerStore'
 
 let getWrongKeyIndex: (_: string) => number | undefined
 
@@ -24,6 +29,9 @@ function TypingArea(
   const textRefreshCount = useTextRefreshCount()
   const isDoneTyping = useIsDoneTyping()
   const cursorIndex = useCursorIndex()
+  const isSearchingForMatch = useIsSearchingForMatch()
+  const name = useName()
+  const playerId = usePlayerId()
   const {
     setTextBeforeCursor,
     setTextAfterCursor,
@@ -49,10 +57,8 @@ function TypingArea(
     fetch('http://localhost:8000/random-texts')
       .then((response) => response.json())
       .then((json) => {
-        if (
-          Object.hasOwn(json, 'messageType') &&
-          json.messageType === 'randomText'
-        ) {
+        const jsonMessage = json as Message
+        if (jsonMessage.type === 'randomText') {
           const randomTextMessage = json as RandomTextMessage
           const text = randomTextMessage.data.text
           setTextArray(text.split(''))
@@ -62,11 +68,41 @@ function TypingArea(
       })
   }, [textRefreshCount])
 
-  function setCursorPosition(key: string) {
-    const isKeyIsOutOfBounds = key === 'Backspace' && cursorIndex === 0
-    if (isKeyIsOutOfBounds) return
-    setCursorIndex(key)
-  }
+  useEffect(() => {
+    if (!isSearchingForMatch) {
+      return
+    }
+    const ws = new WebSocket('ws://localhost:8000')
+    ws.onopen = () => {
+      console.log('Connected to websocket server')
+      const playerInfo: PlayerInfoMessage = {
+        type: 'searchingPlayer',
+        data: {
+          name: name,
+          playerId: playerId,
+        },
+      }
+      const jsonPlayerInfo = JSON.stringify(playerInfo)
+      ws.send(jsonPlayerInfo)
+    }
+    ws.onmessage = (event) => {
+      const data: Message = JSON.parse(event.data)
+      switch (data.type) {
+        case 'matchFound':
+          break
+        case 'gameUpdate':
+          break
+      }
+    }
+    ws.onclose = () => {
+      console.log('Closed websocket connection')
+    }
+
+    return () => {
+      ws.close()
+    }
+  }, [isSearchingForMatch])
+
   useEffect(() => {
     cursorIndex > 0 && setCursorToMoved()
   }, [cursorIndex])
@@ -79,15 +115,19 @@ function TypingArea(
     if (textBeforeCursor && !textAfterCursor) finishTypingGame()
   })
 
+  function setCursorPosition(key: string) {
+    const isKeyIsOutOfBounds = key === 'Backspace' && cursorIndex === 0
+    if (isKeyIsOutOfBounds) return
+    setCursorIndex(key)
+  }
   function handleKeypress(
     event: React.KeyboardEvent<HTMLTextAreaElement>,
   ) {
     const key = event.key
     if (isControlKey(key)) return
     setCursorPosition(key)
-
     const wrongKeyIndex = getWrongKeyIndex(key)
-    if (wrongKeyIndex == undefined) return
+    if (wrongKeyIndex === undefined) return
     setWrongTextStartIndex(wrongKeyIndex)
     wrongKeyIndex > -1 ? increaseWrongKeyCount() : increaseCorrectKeyCount()
   }
