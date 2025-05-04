@@ -37,7 +37,7 @@ func (ts *typingServer) getRandomTextHandler(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-var searchingPlayers = make([]dtos.SearchingPlayerMessage, 0)
+var searchingPlayers = make(map[string]string)
 
 func (ts *typingServer) matchHandler(w http.ResponseWriter, r *http.Request) {
 	var acceptOptions = &websocket.AcceptOptions{
@@ -51,43 +51,50 @@ func (ts *typingServer) matchHandler(w http.ResponseWriter, r *http.Request) {
 	c := make(chan bool)
 	go searchForPlayers(c)
 
+	var searchingPlayerId string
 	ctx := context.Background()
 	for {
 		foundPlayers := <-c
 		if foundPlayers {
-			mf := buildMatchFoundMessage()
-			jsonGf, err := json.Marshal(mf)
+			mfm := buildMatchFoundMessage()
+			jsonMfm, err := json.Marshal(mfm)
 			if err != nil {
 				log.Printf("Failed to marshal game found json: %v\n", err)
 			}
-
-			if err = wsc.Write(ctx, websocket.MessageText, jsonGf); err != nil {
+			if err = wsc.Write(ctx, websocket.MessageText, jsonMfm); err != nil {
 				wsc.CloseNow()
+				delete(searchingPlayers, searchingPlayerId)
+				fmt.Println(searchingPlayers)
 			}
 		} else {
 			msgType, msg, err := wsc.Read(ctx)
 			if err != nil {
 				wsc.CloseNow()
+				delete(searchingPlayers, searchingPlayerId)
+				fmt.Println(searchingPlayers)
 			}
 
-			if msgType == websocket.MessageText {
-				var m dtos.Message
-				if err := json.Unmarshal(msg, &m); err != nil {
-					log.Printf("Failed to unmarshal message: %v\n", err)
+			if msgType != websocket.MessageText {
+				return
+			}
+
+			var m dtos.Message
+			if err := json.Unmarshal(msg, &m); err != nil {
+				log.Printf("Failed to unmarshal message: %v\n", err)
+				continue
+			}
+
+			switch m.Type {
+			case "searchingPlayer":
+				var sp dtos.SearchingPlayerMessage
+				if err := json.Unmarshal(msg, &sp); err != nil {
+					log.Printf("Failed to unmarshal searching player message: %v\n", err)
 					continue
 				}
-				switch m.Type {
-				case "searchingPlayer":
-					var sp dtos.SearchingPlayerMessage
-					if err := json.Unmarshal(msg, &sp); err != nil {
-						log.Printf("Failed to unmarshal searching player message: %v\n", err)
-						continue
-					}
-					searchingPlayers = append(searchingPlayers, sp)
-					fmt.Println(searchingPlayers)
-				default:
-					wsc.Close(1003, "Unknown message type")
-				}
+				searchingPlayerId = sp.Data.PlayerId
+				searchingPlayers[searchingPlayerId] = sp.Data.Name
+			default:
+				wsc.Close(1003, "Unknown message type")
 			}
 		}
 	}
