@@ -13,7 +13,11 @@ import {
   useIsDoneTyping,
   useTypingStatsActions,
 } from '../../stores/TypingStatsStore'
-import { useIsSearchingForMatch } from '../../stores/MultiplayerStore'
+import {
+  useIsSearchingForMatch,
+  useName,
+  usePlayerId,
+} from '../../stores/MultiplayerStore'
 
 let getWrongKeyIndex: (_: string) => number | undefined
 
@@ -26,6 +30,8 @@ function TypingArea(
   const isDoneTyping = useIsDoneTyping()
   const cursorIndex = useCursorIndex()
   const isSearchingForMatch = useIsSearchingForMatch()
+  const name = useName()
+  const playerId = usePlayerId()
   const {
     setTextBeforeCursor,
     setTextAfterCursor,
@@ -51,10 +57,8 @@ function TypingArea(
     fetch('http://localhost:8000/random-texts')
       .then((response) => response.json())
       .then((json) => {
-        if (
-          Object.hasOwn(json, 'messageType') &&
-          json.messageType === 'randomText'
-        ) {
+        const jsonMessage = json as Message
+        if (jsonMessage.type === 'randomText') {
           const randomTextMessage = json as RandomTextMessage
           const text = randomTextMessage.data.text
           setTextArray(text.split(''))
@@ -72,10 +76,10 @@ function TypingArea(
     ws.onopen = () => {
       console.log('Connected to websocket server')
       const playerInfo: PlayerInfoMessage = {
-        type: 'playerInfo',
+        type: 'searchingPlayer',
         data: {
-          nickname: 'mgik',
-          playerId: 123,
+          name: name,
+          playerId: playerId,
         },
       }
       const jsonPlayerInfo = JSON.stringify(playerInfo)

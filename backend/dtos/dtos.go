@@ -1,7 +1,7 @@
 package dtos
 
-type message struct {
-	MessageType string `json:"messageType"`
+type Message struct {
+	Type string `json:"type"`
 }
 
 type randomTextData struct {
@@ -12,12 +12,12 @@ type randomTextData struct {
 }
 
 type RandomTextMessage struct {
-	message
+	Message
 	Data randomTextData `json:"data"`
 }
 
 func (m *RandomTextMessage) setMessageType() {
-	m.MessageType = "randomText"
+	m.Type = "randomText"
 }
 
 func NewRandomTextMessage() *RandomTextMessage {
@@ -32,16 +32,26 @@ type matchFoundData struct {
 }
 
 type MatchFoundMessage struct {
-	message
+	Message
 	Data matchFoundData `json:"data"`
 }
 
 func (m *MatchFoundMessage) setMessageType() {
-	m.MessageType = "matchFound"
+	m.Type = "matchFound"
 }
 
 func NewMatchFoundMessage() *MatchFoundMessage {
 	m := MatchFoundMessage{}
 	m.setMessageType()
 	return &m
+}
+
+type searchingPlayerData struct {
+	Name     string `json:"name"`
+	PlayerId string `json:"playerId"`
+}
+
+type SearchingPlayerMessage struct {
+	Message
+	Data searchingPlayerData `json:"data"`
 }

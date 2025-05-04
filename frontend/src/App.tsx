@@ -19,7 +19,7 @@ function App() {
   const { searchForPlayers, stopSearhingForPlayers } = useMultiplayerActions()
   const { increaseTextRefreshCount, resetCursorIndex } = useTextActions()
   const { resetTypingStats } = useTypingStatsActions()
-  const { setRandomName } = useMultiplayerActions()
+  const { setRandomName, setRandomPlayerId } = useMultiplayerActions()
   useEffect(() => {
     const removeTabDefaultFunctionality = (event: KeyboardEvent) => {
       event.key === 'Tab' && event.preventDefault()
@@ -47,6 +47,7 @@ function App() {
 
   useEffect(() => {
     setRandomName()
+    setRandomPlayerId()
   }, [])
 
   return (

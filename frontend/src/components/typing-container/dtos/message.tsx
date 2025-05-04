@@ -1,4 +1,8 @@
-type MessageType = 'randomText' | 'playerInfo' | 'matchFound' | 'gameUpdate'
+type MessageType =
+  | 'randomText'
+  | 'searchingPlayer'
+  | 'matchFound'
+  | 'gameUpdate'
 
 export interface Message {
   type: MessageType
@@ -16,8 +20,8 @@ export interface RandomTextMessage extends Message {
 }
 
 interface PlayerInfo {
-  nickname: string
-  playerId: number
+  name: string
+  playerId: string
 }
 
 export interface PlayerInfoMessage extends Message {

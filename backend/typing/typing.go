@@ -37,17 +37,7 @@ func (ts *typingServer) getRandomTextHandler(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-type data struct {
-	Nickname string `json:"nickname"`
-	PlayerId int    `json:"playerId"`
-}
-
-type searchingPlayer struct {
-	Type string `json:"type"`
-	Data data   `json:"data"`
-}
-
-var searchingPlayers = make([]searchingPlayer, 0)
+var searchingPlayers = make([]dtos.SearchingPlayerMessage, 0)
 
 func (ts *typingServer) matchHandler(w http.ResponseWriter, r *http.Request) {
 	var acceptOptions = &websocket.AcceptOptions{
@@ -71,8 +61,7 @@ func (ts *typingServer) matchHandler(w http.ResponseWriter, r *http.Request) {
 				log.Printf("Failed to marshal game found json: %v\n", err)
 			}
 
-			err = wsc.Write(ctx, websocket.MessageText, jsonGf)
-			if err != nil {
+			if err = wsc.Write(ctx, websocket.MessageText, jsonGf); err != nil {
 				wsc.CloseNow()
 			}
 		} else {
@@ -82,46 +71,27 @@ func (ts *typingServer) matchHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if msgType == websocket.MessageText {
-				var sp searchingPlayer
-				err := json.Unmarshal(msg, &sp)
-				if err != nil {
-					log.Printf("Failed to unmarshal searching player message: %v\n", err)
+				var m dtos.Message
+				if err := json.Unmarshal(msg, &m); err != nil {
+					log.Printf("Failed to unmarshal message: %v\n", err)
+					continue
 				}
-				fmt.Printf("%+v\n", sp)
-				searchingPlayers = append(searchingPlayers, sp)
+				switch m.Type {
+				case "searchingPlayer":
+					var sp dtos.SearchingPlayerMessage
+					if err := json.Unmarshal(msg, &sp); err != nil {
+						log.Printf("Failed to unmarshal searching player message: %v\n", err)
+						continue
+					}
+					searchingPlayers = append(searchingPlayers, sp)
+					fmt.Println(searchingPlayers)
+				default:
+					wsc.Close(1003, "Unknown message type")
+				}
 			}
 		}
 	}
 }
-
-//	func (ts *typingServer) bitch(w http.ResponseWriter, r *http.Request) {
-//		var acceptOptions = &websocket.AcceptOptions{
-//			OriginPatterns: []string{"localhost:5173"},
-//		}
-//
-//		wsc, err := websocket.Accept(w, r, acceptOptions)
-//		if err != nil {
-//			log.Fatal(err)
-//		}
-//
-//		ctx := context.Background()
-//		text :=
-//		err = wsc.Write(ctx, websocket.MessageText, text)
-//		if err != nil {
-//			log.Printf("Failed to send text: %v\n", err)
-//		}
-//
-//		for {
-//			msgType, msg, err := wsc.Read(ctx)
-//			if err != nil {
-//				log.Fatal(err)
-//			}
-//
-//			if msgType == websocket.MessageText {
-//				fmt.Println(string(msg))
-//			}
-//		}
-//	}
 
 func (ts *typingServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ts.mux.ServeHTTP(w, r)
@@ -129,7 +99,7 @@ func (ts *typingServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func searchForPlayers(c chan bool) {
 	for {
-		if len(searchingPlayers) > 1 {
+		if len(searchingPlayers) > 2 {
 			c <- true
 		} else {
 			c <- false
