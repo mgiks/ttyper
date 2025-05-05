@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import './TypingArea.css'
 import { trackTextForWrongKeys } from './utils/trackTextForWrongKeys'
-import { Message, PlayerInfoMessage, RandomTextMessage } from './dtos/message'
+import {
+  Message,
+  RandomTextMessage,
+  SearchForMatchMessage,
+} from './dtos/message'
 import { toggleFocusOfTypingArea } from './utils/toggleFocusOfTypingArea'
 import { isControlKey } from './utils/isControlKey'
 import {
@@ -77,8 +81,8 @@ function TypingArea(
     const ws = new WebSocket('ws://localhost:8000')
     ws.onopen = () => {
       console.log('Connected to websocket server')
-      const playerInfo: PlayerInfoMessage = {
-        type: 'searchingPlayer',
+      const playerInfo: SearchForMatchMessage = {
+        type: 'searchForMatch',
         data: {
           name: name,
           playerId: playerId,

@@ -1,6 +1,6 @@
 type MessageType =
   | 'randomText'
-  | 'searchingPlayer'
+  | 'searchForMatch'
   | 'matchFound'
   | 'gameUpdate'
 
@@ -19,11 +19,11 @@ export interface RandomTextMessage extends Message {
   data: RandomTextData
 }
 
-interface PlayerInfo {
+interface SearchForMatchData {
   name: string
   playerId: string
 }
 
-export interface PlayerInfoMessage extends Message {
-  data: PlayerInfo
+export interface SearchForMatchMessage extends Message {
+  data: SearchForMatchData
 }
