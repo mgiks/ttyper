@@ -13,7 +13,7 @@ func (s *server) searchForMatch(p player, m []byte) {
 		log.Printf("Failed to unmarshal searching player message: %v\n", err)
 	}
 
-	p.name = sfmm.Data.Name
+	p.name = sfmm.Data.PlayerName
 	p.id = sfmm.Data.PlayerId
 
 	s.pm.mu.Lock()

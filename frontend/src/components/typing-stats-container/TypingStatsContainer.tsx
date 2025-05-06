@@ -48,7 +48,7 @@ function TypingStatsContainer() {
     isDoneTyping && handleFinishingTyping()
   }, [isDoneTyping])
 
-  const stopWarchRef = useRef<number>(undefined)
+  const stopWarchRef = useRef<NodeJS.Timeout>(undefined)
 
   useEffect(() => {
     if (isStopwatchRunning) {

@@ -5,20 +5,17 @@ import { getRightText } from './utils/getRightText'
 import { getWrongText } from './utils/getWrongText'
 import InactivityCurtain from './InactivityCurtain'
 import {
+  useText,
   useTextActions,
   useTextAfterCursor,
   useTextBeforeCursor,
-  useTextRefreshCount,
   useWrongTextStartIndex,
 } from '../../stores/TextStore'
 
-function TextArea(
-  { typingContainerRef, typingContainerFocusCount }: {
-    typingContainerRef: React.RefObject<HTMLDivElement | null>
-    typingContainerFocusCount: number
-  },
-) {
-  const textRefreshCount = useTextRefreshCount()
+function TextArea({
+  typingContainerRef,
+}: { typingContainerRef: React.RefObject<HTMLDivElement | null> }) {
+  const text = useText()
   const textBeforeCursor = useTextBeforeCursor()
   const textAfterCursor = useTextAfterCursor()
   const wrongTextStartIndex = useWrongTextStartIndex()
@@ -26,7 +23,10 @@ function TextArea(
 
   const textAreaRef = useRef<HTMLDivElement>(null)
   const cursorRef = useRef<HTMLSpanElement>(null)
-  useEffect(() => keepCursorInView(cursorRef, textAreaRef))
+  useEffect(() => keepCursorInView(cursorRef.current, textAreaRef.current), [
+    textBeforeCursor,
+    textAfterCursor,
+  ])
   useEffect(() => {
     const textArea = textAreaRef.current
     if (!textArea) return
@@ -34,10 +34,10 @@ function TextArea(
     // Causes a reflow to reset the animation
     textArea.offsetHeight
     textArea.style.animation = ''
-  }, [textRefreshCount])
+  }, [text])
 
   const [isCurrentlyTyping, setIsCurrentlyTyping] = useState(false)
-  const timeoutRef = useRef<number>(null)
+  const timeoutRef = useRef<NodeJS.Timeout>(null)
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
     setIsCurrentlyTyping(true)
@@ -72,9 +72,7 @@ function TextArea(
 
   return (
     <>
-      <InactivityCurtain
-        typingContainerFocusCount={typingContainerFocusCount}
-      />
+      <InactivityCurtain />
       <div id='text-area' ref={textAreaRef}>
         <span id='correct-text' className='unselectable-text'>
           {correctText}
@@ -83,9 +81,7 @@ function TextArea(
         <span
           id='cursor'
           ref={cursorRef}
-          className={isCurrentlyTyping || typingContainerFocusCount === 0
-            ? 'paused'
-            : ''}
+          className={isCurrentlyTyping || true ? 'paused' : ''}
         >
         </span>
         <span id='trailing-text' className='unselectable-text'>

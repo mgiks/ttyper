@@ -1,48 +1,38 @@
-import { useEffect, useRef, useState } from 'react'
+import { KeyboardEvent, useEffect, useRef } from 'react'
 import './TypingArea.css'
-import { trackTextForWrongKeys } from './utils/trackTextForWrongKeys'
-import {
-  Message,
-  RandomTextMessage,
-  SearchForMatchMessage,
-} from './dtos/message'
-import { toggleFocusOfTypingArea } from './utils/toggleFocusOfTypingArea'
 import { isControlKey } from './utils/isControlKey'
 import {
   useCursorIndex,
+  useText,
   useTextActions,
   useTextRefreshCount,
+  useWrongTextStartIndex,
 } from '../../stores/TextStore'
-import {
-  useIsDoneTyping,
-  useTypingStatsActions,
-} from '../../stores/TypingStatsStore'
+import { useTypingStatsActions } from '../../stores/TypingStatsStore'
 import {
   useIsSearchingForMatch,
   useMultiplayerActions,
-  useName,
   usePlayerId,
+  usePlayerName,
 } from '../../stores/MultiplayerStore'
-
-let getWrongKeyIndex: (_: string) => number | undefined
+import { getRandomText } from './utils/getRandomText'
+import { Message, SearchForMatchMessage } from './dtos/Message'
 
 function TypingArea(
-  { typingContainerFocusCount }: {
-    typingContainerFocusCount: number
-  },
+  { ref }: { ref: React.RefObject<HTMLTextAreaElement | null> },
 ) {
   const textRefreshCount = useTextRefreshCount()
-  const isDoneTyping = useIsDoneTyping()
   const cursorIndex = useCursorIndex()
   const isSearchingForMatch = useIsSearchingForMatch()
-  const name = useName()
-  const playerId = usePlayerId()
+  const text = useText()
+  const wrongTextStartIndex = useWrongTextStartIndex()
   const {
     setTextBeforeCursor,
     setTextAfterCursor,
     setWrongTextStartIndex,
     setText,
-    setCursorIndex,
+    increaseCursorIndex,
+    decreaseCursorIndex,
   } = useTextActions()
   const {
     finishTypingGame,
@@ -50,47 +40,29 @@ function TypingArea(
     increaseCorrectKeyCount,
     setCursorToMoved,
   } = useTypingStatsActions()
-  const { stopSearchingForMatch } = useMultiplayerActions()
+  const {
+    stopSearchingForMatch,
+  } = useMultiplayerActions()
 
-  const typingAreaRef = useRef<HTMLTextAreaElement>(null)
-  useEffect(
-    () => toggleFocusOfTypingArea(typingContainerFocusCount, typingAreaRef),
-    [typingContainerFocusCount, isDoneTyping],
-  )
-
-  const [textArray, setTextArray] = useState([''])
   useEffect(() => {
-    fetch('http://localhost:8000/random-texts')
-      .then((response) => response.json())
-      .then((json) => {
-        const jsonMessage = json as Message
-        if (jsonMessage.type === 'randomText') {
-          const randomTextMessage = json as RandomTextMessage
-          const text = randomTextMessage.data.text
-          setTextArray(text.split(''))
-          getWrongKeyIndex = trackTextForWrongKeys(text)
-          setText(text)
-        }
-      })
+    getRandomText().then((text) => setText(text))
   }, [textRefreshCount])
 
+  const playerId = usePlayerId()
+  const playerName = usePlayerName()
   useEffect(() => {
-    if (!isSearchingForMatch) {
-      return
-    }
+    if (!isSearchingForMatch) return
     const ws = new WebSocket('ws://localhost:8000')
+
     ws.onopen = () => {
       console.log('Connected to websocket server')
       const playerInfo: SearchForMatchMessage = {
         type: 'searchForMatch',
-        data: {
-          name: name,
-          playerId: playerId,
-        },
+        data: { playerName, playerId },
       }
-      const jsonPlayerInfo = JSON.stringify(playerInfo)
-      ws.send(jsonPlayerInfo)
+      ws.send(JSON.stringify(playerInfo))
     }
+
     ws.onmessage = (event) => {
       const data: Message = JSON.parse(event.data)
       switch (data.type) {
@@ -100,48 +72,63 @@ function TypingArea(
           break
       }
     }
+
     ws.onclose = () => {
       console.log('Closed websocket connection')
       stopSearchingForMatch()
     }
 
-    return () => {
-      ws.close()
-    }
+    return () => ws.close()
   }, [isSearchingForMatch])
 
   useEffect(() => {
     cursorIndex > 0 && setCursorToMoved()
   }, [cursorIndex])
 
-  const textBeforeCursor = textArray.slice(0, cursorIndex).join('')
-  const textAfterCursor = textArray.slice(cursorIndex).join('')
   useEffect(() => {
+    const textBeforeCursor = text.split('').slice(0, cursorIndex).join('')
+    const textAfterCursor = text.split('').slice(cursorIndex).join('')
     setTextAfterCursor(textAfterCursor)
     setTextBeforeCursor(textBeforeCursor)
-    if (textBeforeCursor && !textAfterCursor) finishTypingGame()
+    const isAtTheEndOfText = textBeforeCursor && !textAfterCursor
+    isAtTheEndOfText && finishTypingGame()
   })
 
-  function setCursorPosition(key: string) {
-    const isKeyIsOutOfBounds = key === 'Backspace' && cursorIndex === 0
-    if (isKeyIsOutOfBounds) return
-    setCursorIndex(key)
+  function updateCursorIndexByKey(key: string) {
+    key === 'Backspace' ? decreaseCursorIndex() : increaseCursorIndex()
   }
-  function handleKeypress(
-    event: React.KeyboardEvent<HTMLTextAreaElement>,
-  ) {
-    const key = event.key
+
+  function checkIfKeyIsWrong(key: string) {
+    return !(text.at(cursorIndex) === key)
+  }
+
+  const lastPressedKey = useRef('')
+  useEffect(() => {
+    wrongTextStartIndex > -1 && lastPressedKey.current !== 'Backspace'
+      ? increaseWrongKeyCount()
+      : increaseCorrectKeyCount()
+  }, [wrongTextStartIndex, cursorIndex])
+
+  useEffect(() => {
+    if (cursorIndex === wrongTextStartIndex) setWrongTextStartIndex(-1)
+  }, [cursorIndex, wrongTextStartIndex])
+
+  function handleKeypress(event: KeyboardEvent) {
+    const { key } = event
+
     if (isControlKey(key)) return
-    setCursorPosition(key)
-    const wrongKeyIndex = getWrongKeyIndex(key)
-    if (wrongKeyIndex === undefined) return
-    setWrongTextStartIndex(wrongKeyIndex)
-    wrongKeyIndex > -1 ? increaseWrongKeyCount() : increaseCorrectKeyCount()
+    lastPressedKey.current = key
+    updateCursorIndexByKey(key)
+
+    if (key === 'Backspace') return
+    if (checkIfKeyIsWrong(key) && wrongTextStartIndex === -1) {
+      setWrongTextStartIndex(cursorIndex)
+    }
   }
 
   return (
     <textarea
-      ref={typingAreaRef}
+      ref={ref}
       onKeyDown={handleKeypress}
       id='typing-area'
       autoFocus

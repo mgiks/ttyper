@@ -47,8 +47,8 @@ func NewMatchFoundMessage() *MatchFoundMessage {
 }
 
 type searchForMatchData struct {
-	Name     string `json:"name"`
-	PlayerId string `json:"playerId"`
+	PlayerName string `json:"playerName"`
+	PlayerId   string `json:"playerId"`
 }
 
 type SearchForMatchMessage struct {

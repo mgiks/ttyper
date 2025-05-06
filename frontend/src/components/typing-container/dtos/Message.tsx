@@ -20,7 +20,7 @@ export interface RandomTextMessage extends Message {
 }
 
 interface SearchForMatchData {
-  name: string
+  playerName: string
   playerId: string
 }
 
