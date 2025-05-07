@@ -1,7 +1,7 @@
 import './TypingContainer.css'
 import TextArea from './TextArea'
 import TypingArea from './TypingArea'
-import { focusElement } from './utils/focus'
+import { focusElement } from './utils/focusElement'
 import { useEffect, useRef } from 'react'
 
 function TypingContainer() {
