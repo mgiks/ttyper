@@ -5,17 +5,17 @@ import { getRightText } from './utils/getRightText'
 import { getWrongText } from './utils/getWrongText'
 import InactivityCurtain from './InactivityCurtain'
 import {
-  useText,
   useTextActions,
   useTextAfterCursor,
   useTextBeforeCursor,
+  useTextRefreshCount,
   useWrongTextStartIndex,
 } from '../../stores/TextStore'
 
 function TextArea({
   typingContainerRef,
 }: { typingContainerRef: React.RefObject<HTMLDivElement | null> }) {
-  const text = useText()
+  const textRefreshCount = useTextRefreshCount()
   const textBeforeCursor = useTextBeforeCursor()
   const textAfterCursor = useTextAfterCursor()
   const wrongTextStartIndex = useWrongTextStartIndex()
@@ -34,7 +34,7 @@ function TextArea({
     // Causes a reflow to reset the animation
     textArea.offsetHeight
     textArea.style.animation = ''
-  }, [text])
+  }, [textRefreshCount])
 
   const [isCurrentlyTyping, setIsCurrentlyTyping] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout>(null)
