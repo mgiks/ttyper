@@ -12,6 +12,7 @@ body {
 }
 
 #root {
+  font-family: 'JetBrains Mono', 'Georgia', monospace, sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: center;
