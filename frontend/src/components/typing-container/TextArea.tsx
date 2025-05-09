@@ -12,12 +12,9 @@ import {
   useWrongTextStartIndex,
 } from '../../stores/TextStore'
 
-function TextArea(
-  { typingContainerRef, typingContainerFocusCount }: {
-    typingContainerRef: React.RefObject<HTMLDivElement | null>
-    typingContainerFocusCount: number
-  },
-) {
+function TextArea({
+  typingContainerRef,
+}: { typingContainerRef: React.RefObject<HTMLDivElement | null> }) {
   const textRefreshCount = useTextRefreshCount()
   const textBeforeCursor = useTextBeforeCursor()
   const textAfterCursor = useTextAfterCursor()
@@ -26,7 +23,10 @@ function TextArea(
 
   const textAreaRef = useRef<HTMLDivElement>(null)
   const cursorRef = useRef<HTMLSpanElement>(null)
-  useEffect(() => keepCursorInView(cursorRef, textAreaRef))
+  useEffect(() => keepCursorInView(cursorRef.current, textAreaRef.current), [
+    textBeforeCursor,
+    textAfterCursor,
+  ])
   useEffect(() => {
     const textArea = textAreaRef.current
     if (!textArea) return
@@ -37,7 +37,7 @@ function TextArea(
   }, [textRefreshCount])
 
   const [isCurrentlyTyping, setIsCurrentlyTyping] = useState(false)
-  const timeoutRef = useRef<number>(null)
+  const timeoutRef = useRef<NodeJS.Timeout>(null)
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
     setIsCurrentlyTyping(true)
@@ -72,9 +72,7 @@ function TextArea(
 
   return (
     <>
-      <InactivityCurtain
-        typingContainerFocusCount={typingContainerFocusCount}
-      />
+      <InactivityCurtain />
       <div id='text-area' ref={textAreaRef}>
         <span id='correct-text' className='unselectable-text'>
           {correctText}
@@ -83,9 +81,7 @@ function TextArea(
         <span
           id='cursor'
           ref={cursorRef}
-          className={isCurrentlyTyping || typingContainerFocusCount === 0
-            ? 'paused'
-            : ''}
+          className={isCurrentlyTyping ? 'paused' : ''}
         >
         </span>
         <span id='trailing-text' className='unselectable-text'>

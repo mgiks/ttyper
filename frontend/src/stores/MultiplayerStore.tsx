@@ -12,38 +12,39 @@ function generateRandomPlayerId() {
 type MultiplayerActions = {
   setRandomName: () => void
   setRandomPlayerId: () => void
-  searchForPlayers: () => void
-  stopSearhingForPlayers: () => void
+  searchForMatch: () => void
+  stopSearchingForMatch: () => void
 }
 
 type MultiplayerState = {
-  name: string
+  playerName: string
   playerId: string
   isSearchingForMatch: boolean
   actions: MultiplayerActions
 }
 
 const useMultiplayerStore = create<MultiplayerState>()((set) => ({
-  name: '',
+  playerName: '',
   playerId: '',
   isSearchingForMatch: false,
   actions: {
     setRandomName: () => {
-      set({ name: generateRandomName() })
+      set({ playerName: generateRandomName() })
     },
     setRandomPlayerId: () => {
       set({ playerId: generateRandomPlayerId() })
     },
-    searchForPlayers: () => {
+    searchForMatch: () => {
       set({ isSearchingForMatch: true })
     },
-    stopSearhingForPlayers: () => {
+    stopSearchingForMatch: () => {
       set({ isSearchingForMatch: false })
     },
   },
 }))
 
-export const useName = () => useMultiplayerStore((state) => state.name)
+export const usePlayerName = () =>
+  useMultiplayerStore((state) => state.playerName)
 export const usePlayerId = () => useMultiplayerStore((state) => state.playerId)
 export const useIsSearchingForMatch = () =>
   useMultiplayerStore((state) => state.isSearchingForMatch)

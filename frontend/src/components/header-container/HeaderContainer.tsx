@@ -1,9 +1,9 @@
-import { useName } from '../../stores/MultiplayerStore'
+import { usePlayerName } from '../../stores/MultiplayerStore'
 import './HeaderContainer.css'
 
 function HeaderContainer() {
-  const name = useName()
-  return <div id='header-container'>{name}</div>
+  const playerName = usePlayerName()
+  return <div id='header-container'>{playerName}</div>
 }
 
 export default HeaderContainer

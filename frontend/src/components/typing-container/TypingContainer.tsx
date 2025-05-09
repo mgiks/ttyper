@@ -1,41 +1,37 @@
 import './TypingContainer.css'
 import TextArea from './TextArea'
 import TypingArea from './TypingArea'
-import { useRef, useState } from 'react'
-import { useOutsideClickAndKeyPress } from '../../hooks/useOutsideClickAndKeypress'
+import { focusElement } from './utils/focusElement'
+import { useEffect, useRef } from 'react'
+import { useIsDoneTyping } from '../../stores/TypingStatsStore'
 
 function TypingContainer() {
-  // Not a boolean to prevent unfocusing typing area
-  // when clicking on typing container
-  const [focusCount, setFocusCount] = useState(1)
+  const typingContainerRef = useRef<HTMLDivElement>(null)
+  const typingAreaRef = useRef<HTMLTextAreaElement | null>(null)
+  const isDoneTyping = useIsDoneTyping()
 
-  function focusTypingContainer() {
-    setFocusCount((prevFocusCount) => prevFocusCount + 1)
-  }
-  function unfocusTypingContainer() {
-    setFocusCount(0)
+  function focusTypingArea() {
+    typingAreaRef.current && focusElement(typingAreaRef.current)
   }
 
-  const ref = useRef<HTMLDivElement>(null)
-  const typingContainerRef = useOutsideClickAndKeyPress<HTMLDivElement>(
-    unfocusTypingContainer,
-    focusTypingContainer,
-    ref as React.RefObject<HTMLDivElement>,
-  )
+  useEffect(() => {
+    document.addEventListener('keypress', () => {
+      focusTypingArea()
+    })
+  }, [])
+
+  useEffect(() => {
+    focusTypingArea()
+  }, [isDoneTyping])
 
   return (
     <div
-      ref={typingContainerRef}
       id='typing-container'
-      onClick={focusTypingContainer}
+      ref={typingContainerRef}
+      onClick={focusTypingArea}
     >
-      <TypingArea
-        typingContainerFocusCount={focusCount}
-      />
-      <TextArea
-        typingContainerRef={typingContainerRef}
-        typingContainerFocusCount={focusCount}
-      />
+      <TypingArea ref={typingAreaRef} />
+      <TextArea typingContainerRef={typingContainerRef} />
     </div>
   )
 }

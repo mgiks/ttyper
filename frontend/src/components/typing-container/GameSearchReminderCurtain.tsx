@@ -1,10 +1,10 @@
-import { useIsSearchingForPlayers } from '../../stores/MultiplayerStore'
+import { useIsSearchingForMatch } from '../../stores/MultiplayerStore'
 import { PlayerModes, usePlayerMode } from '../../stores/TypingStatsStore'
 import './GameSearchReminderCurtain.css'
 
 function GameSearchReminderCurtain() {
   const playerMode = usePlayerMode()
-  const isSearchingForPlayers = useIsSearchingForPlayers()
+  const isSearchingForPlayers = useIsSearchingForMatch()
   const gameSearchReminderCurtain = (
     <div id='game-search-reminder-curtain'>
       Press <kbd>Tab</kbd> to search for a game

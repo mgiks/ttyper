@@ -5,15 +5,12 @@ import (
 	"net/http"
 
 	"github.com/mgiks/ttyper/server"
-	"github.com/mgiks/ttyper/typing"
+	"github.com/mgiks/ttyper/utils"
 )
 
 func main() {
-	server.ConfigureServer()
-
-	tsMux := typing.NewTypingServer()
-	err := http.ListenAndServe(":8000", tsMux)
-	if err != nil {
+	utils.LoadEnvs()
+	if err := http.ListenAndServe(":8000", server.New()); err != nil {
 		log.Fatal(err)
 	}
 }

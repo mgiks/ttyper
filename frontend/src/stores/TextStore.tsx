@@ -6,7 +6,8 @@ type TextActions = {
   setTextBeforeCursor: (textBeforeCursor: string) => void
   setTextAfterCursor: (textAfterCursor: string) => void
   setWrongTextStartIndex: (wrongTextStartIndex: number) => void
-  setCursorIndex: (key: string) => void
+  increaseCursorIndex: () => void
+  decreaseCursorIndex: () => void
   resetCursorIndex: () => void
   increaseTextRefreshCount: () => void
 }
@@ -39,9 +40,11 @@ const useTextStore = create<TextState>()((set) => ({
       set({ textAfterCursor: textAfterCursor }),
     setWrongTextStartIndex: (wrongTextStartIndex: number) =>
       set({ wrongTextStartIndex: wrongTextStartIndex }),
-    setCursorIndex: (key: string) =>
+    increaseCursorIndex: () =>
+      set((state) => ({ cursorIndex: state.cursorIndex + 1 })),
+    decreaseCursorIndex: () =>
       set((state) => ({
-        cursorIndex: state.cursorIndex + (key === 'Backspace' ? -1 : 1),
+        cursorIndex: state.cursorIndex > 0 ? state.cursorIndex - 1 : 0,
       })),
     resetCursorIndex: () => set({ cursorIndex: 0 }),
     increaseTextRefreshCount: () =>

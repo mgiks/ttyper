@@ -1,7 +1,13 @@
 package utils
 
-import "net/http"
+import (
+	"log"
 
-func EnableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+	"github.com/joho/godotenv"
+)
+
+func LoadEnvs() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Failed to load environmental variables: %v\n", err)
+	}
 }
