@@ -110,7 +110,7 @@ function TypingArea(
   }, [wrongTextStartIndex, cursorIndex])
 
   useEffect(() => {
-    if (cursorIndex === wrongTextStartIndex) setWrongTextStartIndex(-1)
+    if (cursorIndex <= wrongTextStartIndex) setWrongTextStartIndex(-1)
   }, [cursorIndex, wrongTextStartIndex])
 
   function handleKeypress(event: KeyboardEvent) {
