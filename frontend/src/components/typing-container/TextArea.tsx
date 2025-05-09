@@ -81,7 +81,7 @@ function TextArea({
         <span
           id='cursor'
           ref={cursorRef}
-          className={isCurrentlyTyping || true ? 'paused' : ''}
+          className={isCurrentlyTyping ? 'paused' : ''}
         >
         </span>
         <span id='trailing-text' className='unselectable-text'>
