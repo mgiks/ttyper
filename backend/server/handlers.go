@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -37,7 +38,8 @@ func (s *server) websocketMessageHandler(
 	p := player{conn: wsc}
 	for {
 		fmt.Println(s.pm.players)
-		wsMessageType, wsMessage, err := p.conn.Read(s.ctx)
+		ctx := context.TODO()
+		wsMessageType, wsMessage, err := p.conn.Read(ctx)
 		if err != nil {
 			s.pm.mu.Lock()
 			delete(s.pm.players, p.id)

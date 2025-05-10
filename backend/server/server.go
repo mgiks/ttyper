@@ -36,7 +36,6 @@ type server struct {
 	mm  *matchManager
 	db  *db.Database
 	mr  *messageRouter
-	ctx context.Context
 }
 
 func (s *server) setupRoutes() {
@@ -45,7 +44,8 @@ func (s *server) setupRoutes() {
 }
 
 func (s *server) setupDB() {
-	s.db = db.ConnectToDB(s.ctx)
+	ctx := context.TODO()
+	s.db = db.ConnectToDB(ctx)
 }
 
 func New() *server {
@@ -56,7 +56,6 @@ func New() *server {
 		mm: &matchManager{
 			matches: make(map[string]match),
 		},
-		ctx: context.Background(),
 	}
 	s.setupDB()
 	s.setupRoutes()
