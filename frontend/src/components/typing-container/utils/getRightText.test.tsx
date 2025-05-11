@@ -1,11 +1,11 @@
-import { expectationTables, randomText } from './fixtures'
+import { expectationTables, text } from './fixtures'
 import { getRightText } from './getRightText'
 
 describe('getRightText', () => {
   it.each(expectationTables.getRightText)(
-    `'${randomText}' with wrong key at $index is $expectedText`,
+    `'${text}' with wrong key at $index is $expectedText`,
     ({ index, expectedText }) => {
-      expect(getRightText(randomText, index)).toBe(expectedText)
+      expect(getRightText(text, index)).toBe(expectedText)
     },
   )
 })
