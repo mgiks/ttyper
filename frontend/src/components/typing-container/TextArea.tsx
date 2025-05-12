@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import './TextArea.css'
 import { keepCursorInView } from './utils/keepCursorInView'
-import { getRightText } from './utils/getRightText'
-import { getWrongText } from './utils/getWrongText'
+import { extractCorrectText } from './utils/extractCorrectText'
+import { extractWrongText } from './utils/extractWrongText'
 import InactivityCurtain from './InactivityCurtain'
 import {
   useTextActions,
@@ -47,8 +47,8 @@ function TextArea({
     }, 750)
   }, [textBeforeCursor])
 
-  const correctText = getRightText(textBeforeCursor, wrongTextStartIndex)
-  const wrongText = getWrongText(textBeforeCursor, wrongTextStartIndex)
+  const correctText = extractCorrectText(textBeforeCursor, wrongTextStartIndex)
+  const wrongText = extractWrongText(textBeforeCursor, wrongTextStartIndex)
   useEffect(() => {
     setCorrectText(correctText)
   })

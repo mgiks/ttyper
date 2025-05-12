@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import './TypingStatsContainer.css'
-import { getActualWordCount } from './utils/getActualWordCount'
 import { useCorrectText, useCursorIndex, useText } from '../../stores/TextStore'
 import {
   useCorrectKeyCount,
@@ -13,7 +12,8 @@ import {
 } from '../../stores/TypingStatsStore'
 import PlayerModeSwitcher from './PlayerModeSwitcher'
 import { Result, useResultActions } from '../../stores/ResultStore'
-import { getTypingSpeedAndAccuracy } from '../result-container/utils/getTypingAccuracyAndWPM'
+import { calculateTypingAccuracyAndWPM } from '../result-container/utils/calculateTypingAccuracyAndWPM'
+import { calculateWordCount } from './utils/calculateWordCount'
 
 function TypingStatsContainer() {
   const cursorMoved = useCursorMoved()
@@ -62,7 +62,7 @@ function TypingStatsContainer() {
 
   useEffect(() => {
     if (timeElapsed) {
-      const { GWPM, NWPM, typingAccuracy } = getTypingSpeedAndAccuracy(
+      const { GWPM, NWPM, typingAccuracy } = calculateTypingAccuracyAndWPM(
         cursorIndex,
         timeElapsed,
         correctKeyPresses,
@@ -84,9 +84,9 @@ function TypingStatsContainer() {
       <PlayerModeSwitcher />
       <div id='stopwatch'>{timeElapsed}</div>
       <div id='word-count'>
-        {getActualWordCount(correctText) +
+        {calculateWordCount(correctText) +
           (correctText.length === text.length ? 0 : -1)} /{' '}
-        {getActualWordCount(text)}
+        {calculateWordCount(text)}
       </div>
     </div>
   )

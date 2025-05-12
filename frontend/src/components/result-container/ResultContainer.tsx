@@ -1,6 +1,6 @@
 import './ResultContainer.css'
 import { useCursorIndex, useTextRefreshCount } from '../../stores/TextStore'
-import { getTypingSpeedAndAccuracy } from './utils/getTypingAccuracyAndWPM'
+import { calculateTypingAccuracyAndWPM } from './utils/calculateTypingAccuracyAndWPM'
 import { useEffect } from 'react'
 import {
   useCorrectKeyCount,
@@ -35,7 +35,7 @@ function ResultContainer() {
     return null
   }
 
-  const { GWPM, NWPM, typingAccuracy } = getTypingSpeedAndAccuracy(
+  const { GWPM, NWPM, typingAccuracy } = calculateTypingAccuracyAndWPM(
     cursorIndex,
     typingTime,
     correctKeyPresses,
