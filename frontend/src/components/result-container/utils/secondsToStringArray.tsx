@@ -1,7 +1,5 @@
 export function secondsToStringArray(seconds: number) {
-  let array = []
-  for (let sec = 1; sec <= seconds; sec++) {
-    array.push(sec.toString())
-  }
-  return array
+  if (seconds <= 0) return []
+  return Array(seconds).fill(0).map((_, i) => (seconds - i).toString())
+    .reverse()
 }
