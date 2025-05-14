@@ -2,7 +2,9 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/coder/websocket"
@@ -16,13 +18,12 @@ type player struct {
 }
 
 type playerManager struct {
-	players map[string]player
-	mu      sync.RWMutex
+	searchingPlayers map[string]*player
+	mu               sync.Mutex
 }
 
 type match struct {
-	id      string
-	players []player
+	players []*player
 }
 
 type matchManager struct {
@@ -48,10 +49,40 @@ func (s *server) setupDB() {
 	s.db = db.ConnectToDB(ctx)
 }
 
+func (s *server) matchPlayers() {
+	for {
+		if len(s.pm.searchingPlayers) >= 2 {
+			matchedPlayers := make([]*player, 0, 2)
+			for _, v := range s.pm.searchingPlayers {
+				matchedPlayers = append(matchedPlayers, v)
+				if len(matchedPlayers) == 2 {
+					break
+				}
+			}
+			playerIDs := make([]string, 0, 2)
+			for _, p := range matchedPlayers {
+				fmt.Println("Deleting", p.name)
+				playerIDs = append(playerIDs, p.id)
+				delete(s.pm.searchingPlayers, p.id)
+			}
+			m := match{players: matchedPlayers}
+			matchId := strings.Join(playerIDs, " VS ")
+			s.mm.mu.Lock()
+			s.mm.matches[matchId] = m
+			s.mm.mu.Unlock()
+			fmt.Println(s.mm.matches)
+		}
+	}
+}
+
+func (s *server) launchMatchmaker() {
+	go s.matchPlayers()
+}
+
 func New() *server {
 	s := &server{
 		pm: &playerManager{
-			players: make(map[string]player),
+			searchingPlayers: make(map[string]*player),
 		},
 		mm: &matchManager{
 			matches: make(map[string]match),
@@ -59,6 +90,7 @@ func New() *server {
 	}
 	s.setupDB()
 	s.setupRoutes()
+	s.launchMatchmaker()
 	s.mux.HandleFunc("/", s.websocketMessageHandler)
 	s.mux.HandleFunc("GET /random-texts", s.getRandomTextHandler)
 	return s

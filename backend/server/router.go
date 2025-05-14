@@ -4,7 +4,7 @@ import (
 	"sync"
 )
 
-type messageHandler func(p player, m []byte)
+type messageHandler func(p *player, m []byte)
 
 type messageRouter struct {
 	mhs map[string]messageHandler
@@ -23,7 +23,7 @@ func (mr *messageRouter) addMessageHandler(
 	mr.mhs[mType] = mh
 }
 
-func (mr *messageRouter) routeMessage(p player, mType string, m []byte) {
+func (mr *messageRouter) routeMessage(p *player, mType string, m []byte) {
 	mr.mu.RLock()
 	defer mr.mu.RUnlock()
 	mh, exists := mr.mhs[mType]

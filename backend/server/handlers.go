@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -35,17 +34,15 @@ func (s *server) websocketMessageHandler(
 		wsc.CloseNow()
 	}
 
-	p := player{conn: wsc}
+	p := &player{conn: wsc}
 	for {
-		fmt.Println(s.pm.players)
 		ctx := context.TODO()
 		wsMessageType, wsMessage, err := p.conn.Read(ctx)
 		if err != nil {
 			s.pm.mu.Lock()
-			delete(s.pm.players, p.id)
+			delete(s.pm.searchingPlayers, p.id)
 			s.pm.mu.Unlock()
 
-			fmt.Println(s.pm.players)
 			p.conn.CloseNow()
 			return
 		}
