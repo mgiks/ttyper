@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -60,9 +61,11 @@ func (s *server) matchPlayers() {
 				}
 			}
 			playerIDs := make([]string, 0, 2)
+			playerNames := make([]string, 0, 2)
 			for _, p := range matchedPlayers {
 				fmt.Println("Deleting", p.name)
 				playerIDs = append(playerIDs, p.id)
+				playerNames = append(playerNames, p.name)
 				delete(s.pm.searchingPlayers, p.id)
 			}
 			m := match{players: matchedPlayers}
@@ -70,7 +73,18 @@ func (s *server) matchPlayers() {
 			s.mm.mu.Lock()
 			s.mm.matches[matchId] = m
 			s.mm.mu.Unlock()
-			fmt.Println(s.mm.matches)
+
+			mfm := s.createMatchFoundMessage(matchId, playerNames)
+			jsonMfm, err := json.Marshal(mfm)
+			if err != nil {
+				return
+			}
+			for _, p := range s.mm.matches[matchId].players {
+				err := p.conn.Write(context.TODO(), websocket.MessageText, jsonMfm)
+				if err != nil {
+					p.conn.CloseNow()
+				}
+			}
 		}
 	}
 }

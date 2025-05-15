@@ -27,3 +27,13 @@ interface SearchForMatchData {
 export interface SearchForMatchMessage extends Message {
   data: SearchForMatchData
 }
+
+interface MatchFoundMessageData {
+  matchID: string
+  text: string
+  players: string[]
+}
+
+export interface MatchFoundMessage extends Message {
+  data: MatchFoundMessageData
+}

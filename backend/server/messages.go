@@ -6,7 +6,7 @@ import (
 	"github.com/mgiks/ttyper/dtos"
 )
 
-func (s *server) randomTextMessage() *dtos.RandomTextMessage {
+func (s *server) createRandomTextMessage() *dtos.RandomTextMessage {
 	rtm := dtos.NewRandomTextMessage()
 	row := s.db.GetRandomTextRow()
 	if err := row.Scan(
@@ -22,11 +22,15 @@ func (s *server) randomTextMessage() *dtos.RandomTextMessage {
 	return rtm
 }
 
-// func (s *server) matchFoundMessage() *dtos.MatchFoundMessage {
-// 	mfm := dtos.NewMatchFoundMessage()
-// 	row := s.db.GetRandomText()
-// 	mfm.Data.Text = row
-// 	mfm.Data.Players = []string{"mgik", "somebody"}
-//
-// 	return mfm
-// }
+func (s *server) createMatchFoundMessage(
+	matchID string,
+	playerNames []string,
+) *dtos.MatchFoundMessage {
+	mfm := dtos.NewMatchFoundMessage()
+	row := s.db.GetRandomText()
+
+	mfm.Data.MatchID = matchID
+	mfm.Data.Text = row
+	mfm.Data.Players = playerNames
+	return mfm
+}

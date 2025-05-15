@@ -16,7 +16,11 @@ import {
   usePlayerName,
 } from '../../stores/MultiplayerStore'
 import { getRandomText } from './utils/getRandomText'
-import { Message, SearchForMatchMessage } from './dtos/Message'
+import {
+  MatchFoundMessage,
+  Message,
+  SearchForMatchMessage,
+} from './dtos/Message'
 
 function TypingArea(
   { ref }: { ref: React.RefObject<HTMLTextAreaElement | null> },
@@ -67,6 +71,8 @@ function TypingArea(
       const data: Message = JSON.parse(event.data)
       switch (data.type) {
         case 'matchFound':
+          const matchFoundMessage = data as MatchFoundMessage
+          console.log(matchFoundMessage.data)
           break
         case 'gameUpdate':
           break

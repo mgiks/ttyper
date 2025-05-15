@@ -12,7 +12,7 @@ import (
 
 func (s *server) getRandomTextHandler(w http.ResponseWriter, r *http.Request) {
 	s.enableCORS(&w)
-	rtm := s.randomTextMessage()
+	rtm := s.createRandomTextMessage()
 	jsonRtm, err := json.Marshal(rtm)
 	if err != nil {
 		http.Error(w, "", http.StatusInternalServerError)

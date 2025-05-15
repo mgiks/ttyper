@@ -27,6 +27,7 @@ func NewRandomTextMessage() *RandomTextMessage {
 }
 
 type matchFoundData struct {
+	MatchID string   `json:"matchID"`
 	Text    string   `json:"text"`
 	Players []string `json:"players"`
 }
