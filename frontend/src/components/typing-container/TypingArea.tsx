@@ -46,6 +46,7 @@ function TypingArea(
   } = useTypingStatsActions()
   const {
     stopSearchingForMatch,
+    setMatchFoundData,
   } = useMultiplayerActions()
 
   useEffect(() => {
@@ -72,7 +73,7 @@ function TypingArea(
       switch (data.type) {
         case 'matchFound':
           const matchFoundMessage = data as MatchFoundMessage
-          console.log(matchFoundMessage.data)
+          setMatchFoundData(matchFoundMessage.data)
           break
         case 'gameUpdate':
           break

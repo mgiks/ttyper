@@ -81,6 +81,7 @@ func (s *server) matchPlayers() {
 			}
 			for _, p := range s.mm.matches[matchId].players {
 				err := p.conn.Write(context.TODO(), websocket.MessageText, jsonMfm)
+				fmt.Println(mfm)
 				if err != nil {
 					p.conn.CloseNow()
 				}

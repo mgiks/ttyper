@@ -31,6 +31,6 @@ func (s *server) createMatchFoundMessage(
 
 	mfm.Data.MatchID = matchID
 	mfm.Data.Text = row
-	mfm.Data.Players = playerNames
+	mfm.Data.PlayerNames = playerNames
 	return mfm
 }

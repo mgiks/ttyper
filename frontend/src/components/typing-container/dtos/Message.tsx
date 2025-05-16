@@ -28,12 +28,12 @@ export interface SearchForMatchMessage extends Message {
   data: SearchForMatchData
 }
 
-interface MatchFoundMessageData {
+export interface MatchFoundData {
   matchID: string
   text: string
-  players: string[]
+  playerNames: string[]
 }
 
 export interface MatchFoundMessage extends Message {
-  data: MatchFoundMessageData
+  data: MatchFoundData
 }

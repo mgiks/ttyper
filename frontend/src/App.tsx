@@ -12,6 +12,7 @@ import { useEffect } from 'react'
 import { useTextActions } from './stores/TextStore'
 import { useMultiplayerActions } from './stores/MultiplayerStore'
 import HeaderContainer from './components/header-container/HeaderContainer'
+import MatchProgressContainer from './components/match-progress-container/MatchProgressContainer'
 
 function App() {
   const isDoneTyping = useIsDoneTyping()
@@ -53,6 +54,7 @@ function App() {
   return (
     <>
       <HeaderContainer />
+      <MatchProgressContainer />
       <div
         id='typing-container-with-stats'
         className={isDoneTyping ? 'invisible' : undefined}
